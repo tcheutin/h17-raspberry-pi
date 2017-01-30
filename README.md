@@ -10,10 +10,9 @@
 
 ## TODO
 
-[] API
-[] Script
-	- [] Network
-	- [] Boot
-	- [] Nginx
-	- [] Acces point
-
+	- [ ] API
+	- [ ] Script
+	- [ ] Network
+	- [ ] Boot
+	- [ ] Nginx
+	- [ ] Acces point
