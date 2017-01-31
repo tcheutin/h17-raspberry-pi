@@ -11,7 +11,7 @@
 ## TODO
 - [ ] API
 - [ ] Script
-- [ ] Network
-- [ ] Boot
-- [ ] Nginx
-- [ ] Acces point
+	- [ ] Network
+	- [ ] Boot
+	- [ ] Nginx
+	- [ ] Acces point
