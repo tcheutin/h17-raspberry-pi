@@ -20,7 +20,6 @@
 	- [ ] Boot
 	- [ ] Nginx
 	- [ ] Acces point
-=======
 
 ## Useful commands
 - Sync the database:
