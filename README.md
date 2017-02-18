@@ -35,3 +35,5 @@
 `python gti525/manage.py runserver`
 - Curl basic request:
 `curl -H 'Accept: application/json; indent=4' -u user:pass http://127.0.0.1:8000/`
+- Clear all data from the database:
+`python gti525/manage.py flush`

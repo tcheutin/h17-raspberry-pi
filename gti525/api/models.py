@@ -32,5 +32,4 @@ class Ticket(models.Model):
                               choices=TICKET_STATUS,
                               default=NON_VALIDATED)
     validationTime = models.DateTimeField()
-    validationTerminal = models.ForeignKey(Terminal)
-    validationPhone = models.ForeignKey(Mobile)
+    validationTerminal = models.ForeignKey(Terminal, null=True)
