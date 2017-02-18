@@ -29,6 +29,8 @@
 `python gti525/manage.py migrate`
 - Create a super user:
 `python gti525/manage.py createsuperuser`
+- Import fixtures:
+`python gti525/manage.py loaddata gti525/api/fixture/*`
 - Launch server:
 `python gti525/manage.py runserver`
 - Curl basic request:

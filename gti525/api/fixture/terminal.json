@@ -1,0 +1,10 @@
+[
+  {
+    "model": "api.terminal",
+    "pk": 1,
+    "fields": {
+      "status": "Connected",
+      "macAddress": "f4:5c:89:b6:af:f5"
+    }
+  }
+]

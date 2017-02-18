@@ -1,0 +1,13 @@
+[
+  {
+    "model": "api.ticket",
+    "pk": 1,
+    "fields": {
+      "ticketHash": "12345abcdef",
+      "status": "Non-Validated",
+      "validationTime": "2017-02-17 20:23:00",
+      "validationTerminal": 1,
+      "validationPhone": 1
+    }
+  }
+]
