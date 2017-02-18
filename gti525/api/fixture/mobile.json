@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
       "token": "67890ghijk",
+      "ipAddress": "192.168.1.2",
       "status": "Connected"
     }
   }
