@@ -3,49 +3,51 @@ from datetime import date
 
 # Create your models here
 class Terminal(models.Model):
-    ''' Object representation of a Raspberry PI terminal '''
-    CONNECTED = 'Connected'
-    NON_RESPONSIVE = 'Non-Responsive'
-    CONNECTION_STATUS = ((CONNECTED, 'Connected'),
-                         (NON_RESPONSIVE, 'Non-Responsive'))
+    CONNECTION_STATUS = (('c', 'Connected'),
+                         ('n', 'Non-Responsive'))
 
     id = models.AutoField(primary_key=True)
     status  = models.CharField(max_length=30,
                                choices=CONNECTION_STATUS,
-                               default=CONNECTED)
-    ipAddress = models.CharField(max_length=30, null=True)
+                               default='c')
+    ipAddress = models.CharField(max_length=30, default='')
 
 class Mobile(models.Model):
-    ''' Object representation of a mobile device '''
-    CONNECTED = 'Connected'
-    NON_RESPONSIVE = 'Non-Responsive'
-    CONNECTION_STATUS = ((CONNECTED, 'Connected'),
-                         (NON_RESPONSIVE, 'Non-Responsive'))
+    CONNECTION_STATUS = (('c', 'Connected'),
+                         ('n', 'Non-Responsive'))
 
     id = models.AutoField(primary_key=True)
-    token = models.CharField(max_length=30)
-    ipAddress = models.CharField(max_length=30, null=True)
+    token = models.CharField(max_length=30, default='')
+    ipAddress = models.CharField(max_length=30, default='')
     status = models.CharField(max_length=30,
                               choices=CONNECTION_STATUS,
-                              default=CONNECTED)
+                              default='c')
     loginTime = models.DateTimeField(default=date.today)
     logoutTime = models.DateTimeField(null=True)
 
+class Auditorium(models.Model):
+    name = models.CharField(max_length=30, default='')
+    address = models.CharField(max_length=30, default='')
+
+class Event(models.Model):
+    name = models.CharField(max_length=30, default='')
+    time = models.DateTimeField(null=True)
+    auditorium = models.ForeignKey(Auditorium, null=True)
+
+
 class Ticket(models.Model):
-    ''' Object representation of a event ticket '''
-    VALIDATED = 'Validated'
-    NON_VALIDATED = 'Non-Validated'
-    IN_PROGRESS = 'In Progress'
-    TICKET_STATUS = ((VALIDATED, 'Validated'),
-                     (NON_VALIDATED, 'Non-Validated'),
-                     (IN_PROGRESS, 'In Progress'))
+    TICKET_STATUS = (('v', 'Validated'),
+                     ('n', 'Non-Validated'),
+                     ('i', 'In Progress'))
 
     ticketHash = models.CharField(max_length=30, unique=True, default=None)
     status = models.CharField(max_length=30,
                               choices=TICKET_STATUS,
-                              default=NON_VALIDATED)
-    validationTime = models.DateTimeField()
+                              default='n')
+    validationTime = models.DateTimeField(null=True)
     validationTerminal = models.ForeignKey(Terminal, null=True)
+    owner = models.CharField(max_length=30, default='')
+    event = models.ForeignKey(Event, null=True)
 
 class MobileCommLog(models.Model):
     ''' Only used to store the log of ours validations attempts '''
