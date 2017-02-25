@@ -1,0 +1,10 @@
+[
+  {
+    "model": "api.terminal",
+    "pk": 1,
+    "fields": {
+      "status": "Connected",
+      "ipAddress": "192.168.1.1"
+    }
+  }
+]
