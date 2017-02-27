@@ -44,14 +44,15 @@ class TicketDetail(APIView):
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, ticketHash, format=None):
+    def post(self, request, ticketHash, format=None):
         ticket = self.get_object(ticketHash)
+        if ValidationControler.isValidated(ticket):
+            content = {'detail': 'ticket already validated'}
+            return Response(content, status=status.HTTP_409_CONFLICT)
         ticket.validationTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ticket.status = 'Validated'
         serializer = PublicTicketSerializer(ticket, data=request.data)
         if serializer.is_valid():
-            if ValidationControler.isValidated(ticket):
-                content = {'detail': 'ticket already validated'}
-                return Response(content, status=status.HTTP_409_CONFLICT)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

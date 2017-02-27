@@ -31,4 +31,4 @@ class PublicTicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ('ticketHash', 'owner' ,'status', 'event')
-        read_only_fields = ('ticketHash', 'event', 'owner')
+        read_only_fields = ('ticketHash', 'owner' ,'status', 'event')
