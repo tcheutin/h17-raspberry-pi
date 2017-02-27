@@ -11,7 +11,9 @@
 ## How to start
 1. Follow instructions from [HERE](http://www.django-rest-framework.org/#quickstart)
 
-2. Contribute :)
+2. Sur votre env python: `pip install drfapikey`
+
+3. Contribute :)
 
 ## TODO
 - [ ] API

@@ -1,0 +1,10 @@
+[
+  {
+    "model": "api.auditorium",
+    "pk": 1,
+    "fields": {
+      "name": "Parc Jean-Drapeau",
+      "address": "296 Chemin du Tour de l'isle, Montréal, QC H3C 4G8"
+    }
+  }
+]

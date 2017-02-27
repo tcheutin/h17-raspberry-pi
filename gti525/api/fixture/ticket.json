@@ -6,7 +6,9 @@
       "ticketHash": "12345abcdef",
       "status": "Non-Validated",
       "validationTime": "2017-02-17 20:23:00",
-      "validationTerminal": 1
+      "validationTerminal": 1,
+      "owner": "Michel Tremblay",
+      "event": 1
     }
   }
 ]
