@@ -39,6 +39,9 @@ class TicketDetail(APIView):
         except Ticket.DoesNotExist:
             raise Http404
 
+    def isValidated(selft, ticket):
+        return ticket.status == "Validated"
+
     def get(self, request, ticketHash, format=None):
         ticket = self.get_object(ticketHash)
         serializer = TicketSerializer(ticket)
@@ -48,7 +51,7 @@ class TicketDetail(APIView):
         payload = ''
         httpResponse = ''
         ticket = self.get_object(ticketHash)
-        if ValidationControler.isValidated(ticket):
+        if self.isValidated(ticket):
             payload = {'detail': 'ticket already validated'}
             httpResponse = status.HTTP_409_CONFLICT
         else:
@@ -62,8 +65,8 @@ class TicketDetail(APIView):
             else:
                 payload = serializers.errors
                 httpResponse = status.HTTP_400_BAD_REQUEST
-        return Response(payload, status=httpResponse)
 
-class ValidationControler():
-    def isValidated(ticket):
-        return ticket.status == "Validated"
+        terminals = Terminal.objects.all()
+        for terminal in terminals:
+            print(terminal.ipAddress)
+        return Response(payload, status=httpResponse)
