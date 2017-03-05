@@ -30,7 +30,7 @@ class TicketList(APIView):
             serializer = TicketSerializer(tickets, many=True)
             return Response(serializer.data)
 
-class TicketDetail(APIView):
+class TicketValidation(APIView):
     ''' Retrieve or update a ticket. '''
 
     def get_object(self, ticketHash):
@@ -39,7 +39,7 @@ class TicketDetail(APIView):
         except Ticket.DoesNotExist:
             raise Http404
 
-    def isValidated(selft, ticket):
+    def isValidated(selft,ticket):
         return ticket.status == "Validated"
 
     def get(self, request, ticketHash, format=None):
