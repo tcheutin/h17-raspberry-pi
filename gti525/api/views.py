@@ -59,6 +59,10 @@ class TicketValidation(APIView):
             if TerminalControler().verifyTicketValidation(ticketHash):
                 payload = {'detail': 'ticket already validated'}
                 httpResponse = status.HTTP_409_CONFLICT
+                ticket.status = 'Validated'
+                serializer = PublicTicketSerializer(ticket, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
             else:
                 TerminalControler().validateTicket(ticketHash)
                 ticket.validationTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
