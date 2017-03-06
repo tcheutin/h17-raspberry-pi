@@ -11,7 +11,7 @@ class TerminalControler():
     def verifyTicketValidation(self, ticketHash):
         isAlreadyValidated = False
         terminals = Terminal.objects.all()
-        headers = {'api-Key': 'phahsh1aif5seeth1taeGhahgho6aeNohceijeek4Phaej2ohx'}
+        headers = {'api-Key': 'bob'}
         for terminal in terminals:
             url = 'http://'+terminal.ipAddress+':8000/api/ticket/'+ticketHash+'/'
             print('Request GET: '+url)
@@ -30,7 +30,7 @@ class TerminalControler():
 
     def validateTicket(self, ticketHash):
         terminals = Terminal.objects.all()
-        headers = {'api-Key': 'phahsh1aif5seeth1taeGhahgho6aeNohceijeek4Phaej2ohx'}
+        headers = {'api-Key': 'bob'}
         for terminal in terminals:
             url = 'http://'+terminal.ipAddress+':8000/api/ticket/validate/'+ticketHash+'/'
             print('Request PATCH: '+url)
