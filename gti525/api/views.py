@@ -6,6 +6,7 @@ from rest_framework import status
 from django.http import Http404
 from datetime import datetime
 from django.utils import timezone
+from api.GridCommunication import TerminalControler
 
 class TerminalList(APIView):
     ''' List all terminal or create a new terminal. '''
@@ -55,6 +56,31 @@ class TicketValidation(APIView):
             payload = {'detail': 'ticket already validated'}
             httpResponse = status.HTTP_409_CONFLICT
         else:
+            if TerminalControler().verifyTicketValidation(ticketHash):
+                payload = {'detail': 'ticket already validated'}
+                httpResponse = status.HTTP_409_CONFLICT
+            else:
+                TerminalControler().validateTicket(ticketHash)
+                ticket.validationTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                ticket.status = 'Validated'
+                serializer = PublicTicketSerializer(ticket, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    payload = serializer.data
+                    httpResponse = status.HTTP_202_ACCEPTED
+                else:
+                    payload = serializers.errors
+                    httpResponse = status.HTTP_400_BAD_REQUEST
+        return Response(payload, status=httpResponse)
+
+    def patch(self, request, ticketHash, format=None):
+        payload = ''
+        httpResponse = ''
+        ticket = self.get_object(ticketHash)
+        if self.isValidated(ticket):
+            payload = {'detail': 'ticket already validated'}
+            httpResponse = status.HTTP_409_CONFLICT
+        else:
             ticket.validationTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             ticket.status = 'Validated'
             serializer = PublicTicketSerializer(ticket, data=request.data)
@@ -65,8 +91,6 @@ class TicketValidation(APIView):
             else:
                 payload = serializers.errors
                 httpResponse = status.HTTP_400_BAD_REQUEST
-
-        terminals = Terminal.objects.all()
-        for terminal in terminals:
-            print(terminal.ipAddress)
         return Response(payload, status=httpResponse)
+
+    # class InternalTicketValidation

@@ -40,7 +40,7 @@ class Ticket(models.Model):
                      ('Non-Validated', 'Non-Validated'),
                      ('In Progress', 'In Progress'))
 
-    ticketHash = models.CharField(max_length=30, unique=True, default=None)
+    ticketHash = models.CharField(max_length=30, default=None)
     status = models.CharField(max_length=30,
                               choices=TICKET_STATUS,
                               default='Non-Validated')
