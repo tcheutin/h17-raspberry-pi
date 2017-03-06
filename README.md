@@ -11,9 +11,11 @@
 ## How to start
 1. Follow instructions from [HERE](http://www.django-rest-framework.org/#quickstart)
 
-2. Sur votre env python: `pip install drfapikey`
+2. On your python env: `pip install drfapikey`
 
-3. Contribute :)
+3. On your python env: `pip install requests`
+
+4. Contribute :)
 
 ## TODO
 - [ ] API
@@ -34,7 +36,7 @@
 - Import fixtures:
 `python gti525/manage.py loaddata gti525/api/fixture/*`
 - Launch server:
-`python gti525/manage.py runserver`
+`python gti525/manage.py runserver 0.0.0.0:8000 --noreload`
 - Curl basic request:
 `curl -H 'Accept: application/json; indent=4' -u user:pass http://127.0.0.1:8000/`
 - Clear all data from the database:

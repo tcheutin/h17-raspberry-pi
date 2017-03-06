@@ -4,7 +4,23 @@
     "pk": 1,
     "fields": {
       "status": "Connected",
-      "ipAddress": "192.168.1.1"
+      "ipAddress": "10.192.197.21"
+    }
+  },
+  {
+    "model": "api.terminal",
+    "pk": 2,
+    "fields": {
+      "status": "Connected",
+      "ipAddress": "10.192.197.127"
+    }
+  },
+  {
+    "model": "api.terminal",
+    "pk": 3,
+    "fields": {
+      "status": "Connected",
+      "ipAddress": "10.192.197.130"
     }
   }
 ]

@@ -25,7 +25,7 @@ SECRET_KEY = 'x7$24n&jvx^w#91ta^q+)$@2d+vq)u6^(0a)b7owy^bt3zp_8%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] #Not the most secure thing but I need django to receive query from anywhere
 
 
 # Application definition
@@ -128,3 +128,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+import django
+django.setup()

@@ -6,6 +6,7 @@ from rest_framework import status
 from django.http import Http404
 from datetime import datetime
 from django.utils import timezone
+from api.GridCommunication import TerminalControler
 
 class TerminalList(APIView):
     ''' List all terminal or create a new terminal. '''
@@ -30,7 +31,7 @@ class TicketList(APIView):
             serializer = TicketSerializer(tickets, many=True)
             return Response(serializer.data)
 
-class TicketDetail(APIView):
+class TicketValidation(APIView):
     ''' Retrieve or update a ticket. '''
 
     def get_object(self, ticketHash):
@@ -38,6 +39,9 @@ class TicketDetail(APIView):
             return Ticket.objects.get(ticketHash=ticketHash)
         except Ticket.DoesNotExist:
             raise Http404
+
+    def isValidated(selft,ticket):
+        return ticket.status == "Validated"
 
     def get(self, request, ticketHash, format=None):
         ticket = self.get_object(ticketHash)
@@ -48,7 +52,36 @@ class TicketDetail(APIView):
         payload = ''
         httpResponse = ''
         ticket = self.get_object(ticketHash)
-        if ValidationControler.isValidated(ticket):
+        if self.isValidated(ticket):
+            payload = {'detail': 'ticket already validated'}
+            httpResponse = status.HTTP_409_CONFLICT
+        else:
+            if TerminalControler().verifyTicketValidation(ticketHash):
+                payload = {'detail': 'ticket already validated'}
+                httpResponse = status.HTTP_409_CONFLICT
+                ticket.status = 'Validated'
+                serializer = PublicTicketSerializer(ticket, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+            else:
+                TerminalControler().validateTicket(ticketHash)
+                ticket.validationTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                ticket.status = 'Validated'
+                serializer = PublicTicketSerializer(ticket, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    payload = serializer.data
+                    httpResponse = status.HTTP_202_ACCEPTED
+                else:
+                    payload = serializers.errors
+                    httpResponse = status.HTTP_400_BAD_REQUEST
+        return Response(payload, status=httpResponse)
+
+    def patch(self, request, ticketHash, format=None):
+        payload = ''
+        httpResponse = ''
+        ticket = self.get_object(ticketHash)
+        if self.isValidated(ticket):
             payload = {'detail': 'ticket already validated'}
             httpResponse = status.HTTP_409_CONFLICT
         else:
@@ -64,6 +97,4 @@ class TicketDetail(APIView):
                 httpResponse = status.HTTP_400_BAD_REQUEST
         return Response(payload, status=httpResponse)
 
-class ValidationControler():
-    def isValidated(ticket):
-        return ticket.status == "Validated"
+    # class InternalTicketValidation
