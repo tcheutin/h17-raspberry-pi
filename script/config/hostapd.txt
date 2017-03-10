@@ -1,0 +1,2 @@
+wpa_passphrase=passphrase
+wpa_passphrase=passphrase
