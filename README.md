@@ -9,13 +9,11 @@
 - Raphaël Zumer
 
 ## How to start
-1. Follow instructions from [HERE](http://www.django-rest-framework.org/#quickstart)
+1. `pip install -r requirements.txt`
 
-2. On your python env: `pip install drfapikey`
+2. Read the [framework reference](http://www.django-rest-framework.org/)
 
-3. On your python env: `pip install requests`
-
-4. Contribute :)
+3. Contribute :)
 
 ## TODO
 - [ ] API
