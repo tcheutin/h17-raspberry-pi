@@ -51,6 +51,7 @@ class Ticket(models.Model):
 
 class MobileCommLog(models.Model):
     ''' Only used to store the log of ours validations attempts '''
-    mobileId = models.ForeignKey(Mobile)
-    ticketId = models.ForeignKey(Ticket)
+    id = models.AutoField(primary_key=True)
+    ticketHash = models.CharField(max_length=30, default='')
     httpResponse = models.IntegerField()
+    time = models.DateTimeField(null=True)

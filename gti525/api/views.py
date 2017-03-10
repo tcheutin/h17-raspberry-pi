@@ -1,4 +1,4 @@
-from api.models import Terminal, Ticket, Mobile
+from api.models import Terminal, Ticket, Mobile, MobileCommLog
 from api.serializers import TerminalSerializer, TicketSerializer, PublicTicketSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -52,6 +52,7 @@ class TicketValidation(APIView):
         payload = ''
         httpResponse = ''
         ticket = self.get_object(ticketHash)
+        logValidation = ''
         if self.isValidated(ticket):
             payload = {'detail': 'ticket already validated'}
             httpResponse = status.HTTP_409_CONFLICT
@@ -75,6 +76,8 @@ class TicketValidation(APIView):
                 else:
                     payload = serializers.errors
                     httpResponse = status.HTTP_400_BAD_REQUEST
+        logValidation = MobileCommLog(ticket, httpResponse)
+        MobileCommLog.objects.create(ticketHash=ticket.ticketHash, httpResponse=httpResponse, time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         return Response(payload, status=httpResponse)
 
     def patch(self, request, ticketHash, format=None):
