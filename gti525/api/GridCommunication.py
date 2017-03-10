@@ -25,7 +25,7 @@ class TerminalControler():
                         if ticket.get('status') == 'Validated':
                             isAlreadyValidated = True
                     else:
-                        print('FUCK serializer is not valid:')
+                        print('Serializer is not valid:')
                         for error in serializer.errors:
                             print('Error: '+error)
                 except requests.exceptions.Timeout:
