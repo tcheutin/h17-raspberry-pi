@@ -29,7 +29,14 @@ apt-get upgrade -y
 apt-get install - y hostapd
 
 # We copy our default config file
-cp config/$DEFAULT_CONFIG_FILE $DEFAULT_FOLDER$DEFAULT_CONFIG_FILE
+yes | cp -rf config/$DEFAULT_CONFIG_FILE $DEFAULT_FOLDER$DEFAULT_CONFIG_FILE
 
 # We add the passphrase for the wifi (it can be change)
 echo 'wpa_passphrase='$PASSWORD >> $DEFAULT_FOLDER/$DEFAULT_CONFIG_FILE
+
+# Enable OnBoot config
+yes | cp -rf /etc/default/hostapd config/hostapd.ORIGINAL_DEFAULT
+yes | cp -rf config/hostapd /etc/default/hostapd
+
+# Start service
+service hostapd start
