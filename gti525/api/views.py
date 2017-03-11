@@ -99,5 +99,3 @@ class TicketValidation(APIView):
                 payload = serializers.errors
                 httpResponse = status.HTTP_400_BAD_REQUEST
         return Response(payload, status=httpResponse)
-
-    # class InternalTicketValidation

@@ -10,5 +10,17 @@
       "owner": "Michel Tremblay",
       "event": 1
     }
+  },
+  {
+    "model": "api.ticket",
+    "pk": 2,
+    "fields": {
+      "ticketHash": "qwerty",
+      "status": "Non-Validated",
+      "validationTime": "2017-02-17 20:23:00",
+      "validationTerminal": 1,
+      "owner": "Melina Di Nardo",
+      "event": 1
+    }
   }
 ]

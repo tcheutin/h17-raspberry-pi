@@ -1,4 +1,4 @@
-from api.models import Terminal, Ticket
+from api.models import Terminal, Ticket, Auditorium, Event
 import requests
 import time
 from api.serializers import TicketSerializer
@@ -7,6 +7,62 @@ from rest_framework.parsers import JSONParser
 
 
 class TerminalControler():
+
+    def obtainTicketList(self, ipAddress):
+        try:
+            terminals = Terminal.objects.all()
+            tickets = Ticket.objects.all()
+            auditoriums = Auditorium.objects.all()
+            events = Event.objects.all()
+            url = 'http://'+ipAddress+':8000/api/tickets/'
+            headers = {'api-Key': 'bob'}
+            response = requests.get(url, headers=headers, timeout=2)
+            tickets_dict = response.json()
+            for ticket_dict in tickets_dict:
+                ticketHash = ticket_dict.get('ticketHash')
+                owner = ticket_dict.get('owner')
+                ticket_status = ticket_dict.get('status')
+                validationTime = ticket_dict.get('validationTime')
+                validationTerminal_dict = ticket_dict.get('validationTerminal')
+                event_dict = ticket_dict.get('event')
+
+                ipAddress = validationTerminal_dict.get('ipAddress')
+                terminal_status = validationTerminal_dict.get('status')
+
+                event_name = event_dict.get('name')
+                event_time = event_dict.get('time')
+                auditorium_dict = event_dict.get('auditorium')
+
+                auditorium_name = auditorium_dict.get('name')
+                auditorium_address = auditorium_dict.get('address')
+
+                auditorium = Auditorium(name=auditorium_name, address=auditorium_address)
+                for audi in auditoriums:
+                    if audi.name == auditorium_name and audi.address == auditorium_address:
+                        auditorium = audi
+                auditorium.save()
+
+                event = Event(name=event_name, time=event_time, auditorium=auditorium)
+                for ev in events:
+                    if ev.name == event_name:
+                        event = ev
+                event.save()
+
+                terminal = Terminal(status=terminal_status, ipAddress=ipAddress)
+                for ter in terminals:
+                    if ter.ipAddress == ipAddress and ter.status == terminal_status:
+                        terminal = ter
+                terminal.save()
+
+                ticket = Ticket(ticketHash=ticketHash, status=ticket_status,
+                                validationTime=validationTime, validationTerminal=terminal,
+                                owner=owner, event=event)
+                for tick in tickets:
+                    if tick.ticketHash == ticketHash:
+                        ticket = tick
+                ticket.save()
+        except requests.exceptions.Timeout:
+            print('TIMEOUT')
 
     def verifyTicketValidation(self, ticketHash):
         isAlreadyValidated = False

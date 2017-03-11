@@ -26,16 +26,19 @@ class Mobile(models.Model):
     logoutTime = models.DateTimeField(null=True)
 
 class Auditorium(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, default='')
     address = models.CharField(max_length=30, default='')
 
 class Event(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, default='')
     time = models.DateTimeField(null=True)
     auditorium = models.ForeignKey(Auditorium, null=True)
 
 
 class Ticket(models.Model):
+    id = models.AutoField(primary_key=True)
     TICKET_STATUS = (('Validated', 'Validated'),
                      ('Non-Validated', 'Non-Validated'),
                      ('In Progress', 'In Progress'))
