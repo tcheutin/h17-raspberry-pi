@@ -9,6 +9,7 @@
 #
 
 # SSL script MUST be run BEFORE this script
+./ssl.sh
 
 # Update/upgrade
 apt-get update

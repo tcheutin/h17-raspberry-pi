@@ -52,6 +52,7 @@ openssl x509 -req -days 3650 \
 # Generating strong Diffie-Hellman. Very Slow on Pi ...
 # For now, we will use a pre-made file [DEV]
 # openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+cp config/dhparam.pem /etc/ssl/certs/
 
 # Copying certificate (ehall.crt) to /etc/ssl/certs/
 mkdir -p  /etc/ssl/certs
