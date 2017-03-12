@@ -1,0 +1,47 @@
+@startuml
+Title BD: Gestion des salles.
+class MobileCommLog {
+(CléP) id : Int[11] *AutoI, Unique*
+httpResponse : Int[3]
+ticketHash : VarChar[30]
+time : DateTime
+}
+
+class Terminal {
+(CléP) id : Int[11] *AutoI, Unique*
+status : VarChar[30]
+ipAddress : Varchar[30] *NonNull*
+}
+
+class Ticket {
+(CléP) id : Int[11] *AutoI, Unique*
+detenteur : VarChar[120]
+ticketHash : VarChar[40] *Unique*
+validationTime : DateTime
+owner : VarChar[120]
+status : VarChar[20]
+event : Lié a event:id Int[11]
+}
+
+class Auditorium {
+(CléP) id : Int[11] *AutoI, Unique*
+address : VarChar[30]
+name : VarChar[30]
+}
+
+class Event {
+(CléP) id : Int[11] *AutoI, Unique*
+time : DateTime
+name : VarChar[30]
+auditorium : Lié a auditorium:id Int[11]
+}
+
+class APIKey {
+(CléP) id : Int[11] *AutoI, Unique*
+created : DateTime
+modified : DateTime
+name : VarChar[120]
+key : VarChar[64] *Unique*
+}
+
+@enduml
