@@ -10,7 +10,6 @@ class TerminalControler():
 
     def obtainTicketList(self, ipAddress):
         try:
-            terminals = Terminal.objects.all()
             tickets = Ticket.objects.all()
             auditoriums = Auditorium.objects.all()
             events = Event.objects.all()
@@ -23,11 +22,7 @@ class TerminalControler():
                 owner = ticket_dict.get('owner')
                 ticket_status = ticket_dict.get('status')
                 validationTime = ticket_dict.get('validationTime')
-                validationTerminal_dict = ticket_dict.get('validationTerminal')
                 event_dict = ticket_dict.get('event')
-
-                ipAddress = validationTerminal_dict.get('ipAddress')
-                terminal_status = validationTerminal_dict.get('status')
 
                 event_name = event_dict.get('name')
                 event_time = event_dict.get('time')
@@ -47,12 +42,6 @@ class TerminalControler():
                     if ev.name == event_name:
                         event = ev
                 event.save()
-
-                terminal = Terminal(status=terminal_status, ipAddress=ipAddress)
-                for ter in terminals:
-                    if ter.ipAddress == ipAddress and ter.status == terminal_status:
-                        terminal = ter
-                terminal.save()
 
                 ticket = Ticket(ticketHash=ticketHash, status=ticket_status,
                                 validationTime=validationTime, validationTerminal=terminal,
