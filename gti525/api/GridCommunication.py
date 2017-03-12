@@ -93,12 +93,44 @@ class TerminalControler():
                     terminal.save()
                     print('TIMEOUT')
 
+    def obtainTerminalsFromGestion(self):
+        headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
+        url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/terminals/'
+        try:
+            response = requests.get(url, headers=headers, timeout=2)
+            terminals_dict = response.json()
+            for terminal_entry in terminals_dict:
+                status = terminal_entry.get('status')
+                address = terminal_entry.get('address')
+                terminal = Terminal(status=status, address=address)
+                termianl.save()
+        except requests.exceptions.Timeout:
+            print('TIMEOUT')
+
+
+    def obtainTicketsFromGestion(self):
+        headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
+        url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/tickets/'
+        try:
+
+        except requests.exceptions.Timeout:
+            print('TIMEOUT')
+
+    def sendIPtoGestion(self):
+        pass
+
     def run(self):
         time.sleep(3) #To let te server start before sending a request to it
-        ticketValidated = self.verifyTicketValidation('12345abcdef')
-        print('Ticket was already validated: '+str(ticketValidated))
-        if not ticketValidated :
-            self.validateTicket('12345abcdef')
+
+        # Query Gestion website for the terminal list and write the list in the DB
+
+        # Post to Gestion website our ip address
+
+        # IF no terminal in DB Query Gestion website for ticketsList
+
+        # Else Query first PI in the list for the tickets
+
+        # Write the ticket list to the DB
 
     def launch(self):
         self.run()
