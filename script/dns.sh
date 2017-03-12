@@ -5,10 +5,11 @@
 # Name        : dns.sh
 # Author      : Nicolas De Oliveira Nadeau
 # Usage       : ./dns.sh [-i Ip]
-# Description : Base installation of bind9, DNS servicing   
+# Description : Base installation of bind9, DNS servicing
 #
 
-IP="172.16.1.1"
+DIGIT=$(ifconfig eth0  | grep 'inet addr:'| egrep '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}' | cut -d. -f4 | awk '{ print $1}')
+IP="172.16.$DIGIT.1"
 
 while getopts i: option
 do
