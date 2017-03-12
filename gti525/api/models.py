@@ -1,7 +1,6 @@
 from django.db import models
 from datetime import date
 
-# Create your models here
 class Terminal(models.Model):
     CONNECTION_STATUS = (('Connected', 'Connected'),
                          ('Non-Responsive', 'Non-Responsive'))
@@ -48,7 +47,6 @@ class Ticket(models.Model):
                               choices=TICKET_STATUS,
                               default='Non-Validated')
     validationTime = models.DateTimeField(null=True)
-    validationTerminal = models.ForeignKey(Terminal, null=True)
     owner = models.CharField(max_length=30, default='')
     event = models.ForeignKey(Event, null=True)
 

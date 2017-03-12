@@ -19,12 +19,11 @@ class TerminalSerializer(serializers.ModelSerializer):
         fields = ('ipAddress', 'status')
 
 class TicketSerializer(serializers.ModelSerializer):
-    validationTerminal = TerminalSerializer(read_only=True)
     event = EventSerializer(read_only=True)
     class Meta:
         model = Ticket
         fields = ('ticketHash', 'owner', 'status',
-                  'validationTime', 'validationTerminal', 'event')
+                  'validationTime', 'event')
 
 class PublicTicketSerializer(serializers.ModelSerializer):
     event = EventSerializer(read_only=True)
