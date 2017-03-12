@@ -49,6 +49,10 @@ openssl x509 -req -days 3650 \
                   -signkey ehall.key \
                   -out ehall.crt
 
+# Generating strong Diffie-Hellman. Very Slow on Pi ...
+# For now, we will use a pre-made file [DEV]
+# openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+
 # Copying certificate (ehall.crt) to /etc/ssl/certs/
 mkdir -p  /etc/ssl/certs
 cp ehall.crt /etc/ssl/certs/
