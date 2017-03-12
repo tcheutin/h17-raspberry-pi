@@ -11,19 +11,6 @@ class Terminal(models.Model):
                                default='Connected')
     ipAddress = models.CharField(max_length=30, default='')
 
-class Mobile(models.Model):
-    CONNECTION_STATUS = (('Connected', 'Connected'),
-                         ('Non-Responsive', 'Non-Responsive'))
-
-    id = models.AutoField(primary_key=True)
-    token = models.CharField(max_length=30, default='')
-    ipAddress = models.CharField(max_length=30, default='')
-    status = models.CharField(max_length=30,
-                              choices=CONNECTION_STATUS,
-                              default='Connected')
-    loginTime = models.DateTimeField(default=date.today)
-    logoutTime = models.DateTimeField(null=True)
-
 class Auditorium(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, default='')

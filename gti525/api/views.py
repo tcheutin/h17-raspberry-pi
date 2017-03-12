@@ -1,4 +1,4 @@
-from api.models import Terminal, Ticket, Mobile, MobileCommLog
+from api.models import Terminal, Ticket, MobileCommLog
 from api.serializers import TerminalSerializer, TicketSerializer, PublicTicketSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response

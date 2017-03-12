@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import Terminal, Mobile, Ticket, Auditorium, Event
+from .models import Terminal, Ticket, Auditorium, Event
 
 class AuditoriumSerializer(serializers.ModelSerializer):
     class Meta:
