@@ -81,6 +81,17 @@ class TicketValidation(APIView):
         return Response(payload, status=httpResponse)
 
     def patch(self, request, ticketHash, format=None):
+        # This code was taken here: http://stackoverflow.com/a/4581997
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        ##############################################################
+        terminal = Terminal.objects.get(ipAddress=ip)
+        if terminal.status == 'Non-Responsive':
+            terminal.status = 'Connected'
+            terminal.save()
         payload = ''
         httpResponse = ''
         ticket = self.get_object(ticketHash)
