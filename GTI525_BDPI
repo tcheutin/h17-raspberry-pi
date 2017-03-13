@@ -20,7 +20,7 @@ ticketHash : VarChar[40] *Unique*
 validationTime : DateTime
 owner : VarChar[120]
 status : VarChar[20]
-event : Lié a event:id Int[11]
+event : Lié à event:id Int[11]
 }
 
 class Auditorium {
@@ -33,7 +33,7 @@ class Event {
 (CléP) id : Int[11] *AutoI, Unique*
 time : DateTime
 name : VarChar[30]
-auditorium : Lié a auditorium:id Int[11]
+auditorium : Lié à auditorium:id Int[11]
 }
 
 class APIKey {
