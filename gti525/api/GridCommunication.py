@@ -105,7 +105,7 @@ class TerminalControler():
             f.close()
             terminals_dict = response.json()
             for terminal_entry in terminals_dict:
-                status = terminal_entry.get('status')
+                status = 'Connected'
                 address = terminal_entry.get('address')
                 try:
                     config_file = open('interface.config', 'r')
