@@ -107,8 +107,18 @@ class TerminalControler():
             for terminal_entry in terminals_dict:
                 status = terminal_entry.get('status')
                 address = terminal_entry.get('address')
-                terminal = Terminal(status=status, address=address)
-                termianl.save()
+                try:
+                    config_file = open('interface.config', 'r')
+                    interface = config_file.readline()
+                    interface = interface[:-1]
+                    config_file.close()
+                except FileNotFoundError:
+                    interface = 'eth0'
+                ni.ifaddresses(interface)
+                ip = ni.ifaddresses(interface)[2][0]['addr']
+                if ip != address:
+                    terminal = Terminal(status=status, ipAddress=address)
+                    terminal.save()
         except requests.exceptions.Timeout:
             print('TIMEOUT: OBTAIN TERMINAL LIST')
         except ValueError:
