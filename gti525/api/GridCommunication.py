@@ -1,10 +1,12 @@
-from api.models import Terminal, Ticket, Auditorium, Event
+from api.models import Terminal, Ticket, Auditorium, Event, MobileCommLog
 import requests
 import time
 import netifaces as ni
 from api.serializers import TicketSerializer
 from io import StringIO
 from rest_framework.parsers import JSONParser
+from api.serializers import ValidationLogSerializer
+from rest_framework.renderers import JSONRenderer
 
 
 class TerminalControler():
@@ -184,8 +186,33 @@ class TerminalControler():
         except requests.exceptions.Timeout:
             print('TIMEOUT: POST IP ADDRESS')
 
+    def sendValidationStats(self):
+        headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
+        url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/log/'
+        try:
+            config_file = open('interface.config', 'r')
+            interface = config_file.readline()
+            interface = interface[:-1]
+            config_file.close()
+        except FileNotFoundError:
+            interface = 'eth0'
+        ni.ifaddresses(interface)
+        ip = ni.ifaddresses(interface)[2][0]['addr']
+        param = {'ipAddress': ip}
+        logsValidation = MobileCommLog.objects.all()
+        serializer = ValidationLogSerializer(logsValidation, many=True)
+        payload = JSONRenderer().render(serializer.data)
+        # print(param)
+        # print(payload)
+        # print('\n')
+        try:
+            response = requests.post(url, headers=headers, timeout=2, params=param, data=payload)
+        except requests.exceptions.Timeout:
+            print('TIMEOUT: POST LOG')
+
     def run(self):
         time.sleep(3) #To let te server start before sending a request to it
+        self.sendValidationStats()
         try:
             config_file = open('interface.config', 'r')
             interface = config_file.readline()

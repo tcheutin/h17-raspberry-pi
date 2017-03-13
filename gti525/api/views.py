@@ -50,6 +50,16 @@ class TicketList(APIView):
 class TicketValidation(APIView):
     ''' Retrieve or update a ticket. '''
 
+    def httpCodeToValidationStatus(self, httpCode):
+        if httpCode == 202:
+            return 'Validated'
+        elif httpCode == 404:
+            return 'Invalid Ticket'
+        elif httpCode == 409:
+            return 'Ticekt Already Validated'
+        else:
+            return 'INVALID HTTP CODE'
+
     def get_object(self, ticketHash):
         try:
             return Ticket.objects.get(ticketHash=ticketHash)
@@ -92,8 +102,8 @@ class TicketValidation(APIView):
                 else:
                     payload = serializers.errors
                     httpResponse = status.HTTP_400_BAD_REQUEST
-        logValidation = MobileCommLog(ticket, httpResponse)
-        MobileCommLog.objects.create(ticketHash=ticket.ticketHash, httpResponse=httpResponse, time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        status = self.httpCodeToValidationStatus(httpResponse)
+        MobileCommLog.objects.create(ticketHash=ticket.ticketHash, httpResponse=status, time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         return Response(payload, status=httpResponse)
 
     def patch(self, request, ticketHash, format=None):
