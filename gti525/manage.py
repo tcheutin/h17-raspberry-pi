@@ -20,7 +20,7 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
-    # from api.GridCommunication import TerminalControler
-    # t1 = threading.Thread(name="Hello1", target=TerminalControler().launch)
-    # t1.start()
+    from api.GridCommunication import TerminalControler
+    t1 = threading.Thread(name="Hello1", target=TerminalControler().launch)
+    t1.start()
     execute_from_command_line(sys.argv)
