@@ -15,7 +15,6 @@ ipAddress : Varchar[30] *NonNull*
 
 class Ticket {
 (CléP) id : Int[11] *AutoI, Unique*
-detenteur : VarChar[120]
 ticketHash : VarChar[40] *Unique*
 validationTime : DateTime
 owner : VarChar[120]
