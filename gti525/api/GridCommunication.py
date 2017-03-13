@@ -111,6 +111,9 @@ class TerminalControler():
                 termianl.save()
         except requests.exceptions.Timeout:
             print('TIMEOUT: OBTAIN TERMINAL LIST')
+        except ValueError:
+            print('INVALID JSON FORMAT')
+            print(response.text)
 
 
     def obtainTicketsFromGestionWebsite(self):
@@ -154,13 +157,16 @@ class TerminalControler():
                 ticket.save()
         except requests.exceptions.Timeout:
             print('TIMEOUT: OBTAIN TICKET LIST')
+        except ValueError:
+            print('INVALID JSON FORMAT')
+            print(response.text)
 
     def sendIPtoGestionWebsite(self, ipAddress):
         headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
         url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/terminals/'
         payload = {'address': ipAddress}
         try:
-            print('POST: '+url)
+            print('POST: '+url+' | Payload: '+str(payload))
             response = requests.post(url, headers=headers, timeout=2, data=payload)
             f = open('log', 'w')
             f.write(response.text)
