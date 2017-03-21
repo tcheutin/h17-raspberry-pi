@@ -12,6 +12,7 @@
 DEFAULT_FOLDER="/etc/hostapd/"
 DEFAULT_CONFIG_FILE="hostapd.conf"
 
+# DEFAULT PASSWORD SHOULD BE CHANGE
 PASSWORD="passphrase"
 
 while getopts p: option

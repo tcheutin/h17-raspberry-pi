@@ -8,7 +8,10 @@
 # Description : Base installation of bind9, DNS servicing
 #
 
-DIGIT=$(ifconfig eth0  | grep 'inet addr:'| egrep '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}' | cut -d. -f4 | awk '{ print $1}')
+DIGIT=$(ifconfig enp0s25  | grep 'inet addr:'| \
+      egrep '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}' | \
+      cut -d. -f4 | awk '{ print $1}')
+
 IP="172.16.$DIGIT.1"
 
 while getopts i: option
