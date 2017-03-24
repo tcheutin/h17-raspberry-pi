@@ -127,6 +127,12 @@ USE_TZ = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = default_headers + (
+    'api-key',
+)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
