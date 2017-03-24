@@ -1,0 +1,5 @@
+#!/bin/bash
+
+python ${FOLDER}/gti525/manage.py makemigrations
+python ${FOLDER}/gti525/manage.py migrate
+python ${FOLDER}/gti525/manage.py runserver --noreload
