@@ -1,5 +1,6 @@
 appdirs==1.4.3
 Django==1.10.6
+django-cors-headers==2.0.2
 djangorestframework==3.6.1
 drfapikey==0.0.3
 Markdown==2.6.8
