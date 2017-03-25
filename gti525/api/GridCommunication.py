@@ -94,27 +94,22 @@ class TerminalControler():
                     terminal.save()
                     print('TIMEOUT')
 
-    def obtainTerminalsFromGestionWebsite(self):
+    def obtainTerminalsFromGestionWebsite(self, ip):
         url = self.heroku_url+'terminals/'
+        headers = self.headers
+        headers['ipAddress'] = ip
         try:
             print('GET: '+url)
-            response = requests.get(url, headers=self.headers, timeout=2)
-            f = open('log', 'w')
+            response = requests.get(url, headers=headers, timeout=2)
+            f = open('GET_TERMINAL_LIST.log', 'w')
+            f.write('POST: '+url+' | Headers: '+str(headers))
+            f.write('\nResponse: \n')
             f.write(response.text)
             f.close()
             terminals_dict = response.json()
             for terminal_entry in terminals_dict:
                 status = 'Connected'
                 address = terminal_entry.get('address')
-                try:
-                    config_file = open('interface.config', 'r')
-                    interface = config_file.readline()
-                    interface = interface[:-1]
-                    config_file.close()
-                except FileNotFoundError:
-                    interface = 'eth0'
-                ni.ifaddresses(interface)
-                ip = ni.ifaddresses(interface)[2][0]['addr']
                 if ip != address:
                     terminal = Terminal(status=status, ipAddress=address)
                     terminal.save()
@@ -222,7 +217,7 @@ class TerminalControler():
         # Post to Gestion website our ip address
         self.sendIPtoGestionWebsite(ip)
         # Query Gestion website for the terminal list
-        #self.obtainTerminalsFromGestionWebsite()
+        self.obtainTerminalsFromGestionWebsite(ip)
         # IF no terminal in DB Query Gestion website for ticketsList
         # terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
         # if len(list(terminals)) == 0:
