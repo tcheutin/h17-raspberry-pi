@@ -8,6 +8,9 @@ from rest_framework.parsers import JSONParser
 
 
 class TerminalControler():
+    headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
+    heroku_url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/'
+
 
     def obtainTicketList(self, ipAddress):
         try:
@@ -15,9 +18,8 @@ class TerminalControler():
             auditoriums = Auditorium.objects.all()
             events = Event.objects.all()
             url = 'http://'+ipAddress+':8000/api/tickets/'
-            headers = {'api-Key': 'bob'}
             print('GET: '+url)
-            response = requests.get(url, headers=headers, timeout=2)
+            response = requests.get(url, headers=self.headers, timeout=2)
             tickets_dict = response.json()
             for ticket_dict in tickets_dict:
                 ticketHash = ticket_dict.get('ticketHash')
@@ -57,13 +59,12 @@ class TerminalControler():
     def verifyTicketValidation(self, ticketHash):
         isAlreadyValidated = False
         terminals = Terminal.objects.all()
-        headers = {'api-Key': 'bob'}
         for terminal in terminals:
             if terminal.status == 'Connected':
                 url = 'http://'+terminal.ipAddress+':8000/api/ticket/'+ticketHash+'/'
                 print('Request GET: '+url)
                 try:
-                    response = requests.get(url, headers=headers, timeout=1)
+                    response = requests.get(url, headers=self.headers, timeout=1)
                     tickets = response.json()
                     serializer = TicketSerializer(data=tickets)
                     if serializer.is_valid():
@@ -82,7 +83,6 @@ class TerminalControler():
 
     def validateTicket(self, ticketHash):
         terminals = Terminal.objects.all()
-        headers = {'api-Key': 'bob'}
         for terminal in terminals:
             if terminal.status == 'Connected':
                 url = 'http://'+terminal.ipAddress+':8000/api/ticket/validate/'+ticketHash+'/'
@@ -95,11 +95,10 @@ class TerminalControler():
                     print('TIMEOUT')
 
     def obtainTerminalsFromGestionWebsite(self):
-        headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
-        url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/terminals/'
+        url = self.heroku_url+'terminals/'
         try:
             print('GET: '+url)
-            response = requests.get(url, headers=headers, timeout=2)
+            response = requests.get(url, headers=self.headers, timeout=2)
             f = open('log', 'w')
             f.write(response.text)
             f.close()
@@ -127,11 +126,10 @@ class TerminalControler():
 
 
     def obtainTicketsFromGestionWebsite(self):
-        headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
-        url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/tickets/'
+        url = self.heroku_url+'tickets/'
         try:
             print('GET: '+url)
-            response = requests.get(url, headers=headers, timeout=3)
+            response = requests.get(url, headers=self.headers, timeout=3)
             f = open('log', 'w')
             f.write(response.text)
             f.close()
@@ -172,17 +170,41 @@ class TerminalControler():
             print(response.text)
 
     def sendIPtoGestionWebsite(self, ipAddress):
-        headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
-        url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/terminals/'
+        url = self.heroku_url+'terminals/'
         payload = {'address': ipAddress}
         try:
             print('POST: '+url+' | Payload: '+str(payload))
-            response = requests.post(url, headers=headers, timeout=2, data=payload)
-            f = open('log', 'w')
+            response = requests.post(url, headers=self.headers, timeout=2, data=payload)
+            f = open('POST_IP_TO_GESTION.log', 'w')
+            f.write('POST: '+url+' | Payload: '+str(payload))
+            f.write('\nResponse: \n')
             f.write(response.text)
             f.close()
         except requests.exceptions.Timeout:
             print('TIMEOUT: POST IP ADDRESS')
+
+    def sendValidationStats(self):
+        url = self.heroku_url+'log/'
+        try:
+            config_file = open('interface.config', 'r')
+            interface = config_file.readline()
+            interface = interface[:-1]
+            config_file.close()
+        except FileNotFoundError:
+            interface = 'eth0'
+        ni.ifaddresses(interface)
+        ip = ni.ifaddresses(interface)[2][0]['addr']
+        param = {'ipAddress': ip}
+        logsValidation = MobileCommLog.objects.all()
+        serializer = ValidationLogSerializer(logsValidation, many=True)
+        payload = JSONRenderer().render(serializer.data)
+        # print(param)
+        # print(payload)
+        # print('\n')
+        try:
+            response = requests.post(url, headers=self.headers, timeout=2, params=param, data=payload)
+        except requests.exceptions.Timeout:
+            print('TIMEOUT: POST LOG')
 
     def run(self):
         time.sleep(3) #To let te server start before sending a request to it
@@ -197,17 +219,17 @@ class TerminalControler():
         ip = ni.ifaddresses(interface)[2][0]['addr']
         print('Local IP Address for '+interface+': '+ip)
 
-        # Query Gestion website for the terminal list
-        self.obtainTerminalsFromGestionWebsite()
         # Post to Gestion website our ip address
         self.sendIPtoGestionWebsite(ip)
+        # Query Gestion website for the terminal list
+        #self.obtainTerminalsFromGestionWebsite()
         # IF no terminal in DB Query Gestion website for ticketsList
-        terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
-        if len(list(terminals)) == 0:
-            self.obtainTicketsFromGestionWebsite()
-        # Else Query first PI in the list for the tickets
-        else:
-            self.obtainTicketList(ipAddress=terminals[0].ipAddress)
+        # terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
+        # if len(list(terminals)) == 0:
+        #     self.obtainTicketsFromGestionWebsite()
+        # # Else Query first PI in the list for the tickets
+        # else:
+        #     self.obtainTicketList(ipAddress=terminals[0].ipAddress)
 
     def launch(self):
         self.run()
