@@ -8,6 +8,7 @@ from rest_framework.parsers import JSONParser
 from api.serializers import ValidationLogSerializer
 from rest_framework.renderers import JSONRenderer
 from django.db import connection
+import json
 
 
 class TerminalControler():
@@ -222,23 +223,22 @@ class TerminalControler():
             print('TIMEOUT: POST IP ADDRESS')
             return False
 
-    def sendValidationStats(self):
-        url = self.heroku_url+'log/'
-        try:
-            config_file = open('interface.config', 'r')
-            interface = config_file.readline()
-            interface = interface[:-1]
-            config_file.close()
-        except FileNotFoundError:
-            interface = 'eth0'
-        ni.ifaddresses(interface)
-        ip = ni.ifaddresses(interface)[2][0]['addr']
-        param = {'ipAddress': ip}
+    def sendValidationStats(self, ip):
+        url = self.heroku_url+'report/'
+        headers = self.headers
+        headers['ipAddress'] = ip
+        headers['Content-Type'] = 'application/json'
         logsValidation = MobileCommLog.objects.all()
         serializer = ValidationLogSerializer(logsValidation, many=True)
-        payload = JSONRenderer().render(serializer.data)
+        payload = json.dumps(serializer.data)
         try:
-            response = requests.post(url, headers=self.headers, timeout=2, params=param, data=payload)
+            response = requests.post(url, headers=headers, timeout=2, data=payload)
+            f = open('POST_LOG.log', 'w')
+            f.write('POST: '+url+' | Headers: '+str(headers))
+            f.write('\nPayload: '+str(payload))
+            f.write('\nResponse: \n')
+            f.write(response.text)
+            f.close()
         except requests.exceptions.Timeout:
             print('TIMEOUT: POST LOG')
 
@@ -281,5 +281,6 @@ class TerminalControler():
                 self.obtainTicketList(ipAddress=terminals[0].ipAddress)
             tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
 
+        self.sendValidationStats(ip)
     def launch(self):
         self.run()
