@@ -22,8 +22,18 @@ class TerminalControler():
             url = 'http://'+ipAddress+':8000/api/tickets/'
             print('GET: '+url)
             response = requests.get(url, headers=self.headers, timeout=2)
+            f = open('GET_TICKET_LIST_INTERNAL.log', 'w')
+            f.write('GET: '+ url+'\nResponse\n')
+            f.write(response.text)
+            f.close()
             tickets_dict = response.json()
+            audi_do_not_exist = True
+            event_do_not_exist = True
             for ticket_dict in tickets_dict:
+                tickets = Ticket.objects.all()
+                auditoriums = Auditorium.objects.all()
+                events = Event.objects.all()
+
                 ticketHash = ticket_dict.get('ticketHash')
                 owner = ticket_dict.get('owner')
                 ticket_status = ticket_dict.get('status')
@@ -38,16 +48,22 @@ class TerminalControler():
                 auditorium_address = auditorium_dict.get('address')
 
                 auditorium = Auditorium(name=auditorium_name, address=auditorium_address)
-                for audi in auditoriums:
-                    if audi.name == auditorium_name and audi.address == auditorium_address:
-                        auditorium = audi
-                auditorium.save()
+                for audi_in_db in auditoriums:
+                    if audi_in_db.name == auditorium_name and audi_in_db.address == auditorium_address:
+                        audi_do_not_exist = False
+                        auditorium = audi_in_db
+                        break
+                if audi_do_not_exist:
+                    auditorium.save()
 
                 event = Event(name=event_name, time=event_time, auditorium=auditorium)
-                for ev in events:
-                    if ev.name == event_name:
-                        event = ev
-                event.save()
+                for event_in_db in events:
+                    if event_in_db.name == event_name:
+                        event_do_not_exist = False
+                        event = event_in_db
+                        break
+                if event_do_not_exist:
+                    event.save()
 
                 ticket = Ticket(ticketHash=ticketHash, status=ticket_status,
                                 validationTime=validationTime, owner=owner, event=event)
@@ -122,18 +138,31 @@ class TerminalControler():
             print(response.text)
 
 
-    def obtainTicketsFromGestionWebsite(self):
+    def obtainTicketsFromGestionWebsite(self, ip):
         url = self.heroku_url+'tickets/'
+        headers = self.headers
+        headers['ipAddress'] = ip
         try:
+            tickets = Ticket.objects.all()
+            auditoriums = Auditorium.objects.all()
+            events = Event.objects.all()
             print('GET: '+url)
-            response = requests.get(url, headers=self.headers, timeout=3)
-            f = open('log', 'w')
+            response = requests.get(url, headers=self.headers, timeout=10)
+            f = open('GET_TICKET_LIST_GESTION.log', 'w')
+            f.write('GET: '+ url+' | Headers: '+str(headers)+'\nResponse\n')
             f.write(response.text)
             f.close()
             tickets_dict = response.json()
+            audi_do_not_exist = True
+            event_do_not_exist = True
             for ticket_dict in tickets_dict:
+                tickets = Ticket.objects.all()
+                auditoriums = Auditorium.objects.all()
+                events = Event.objects.all()
+
                 ticketHash = ticket_dict.get('id')
                 owner = ticket_dict.get('owner')
+                ticket_status = 'Non-Validated'
                 event_dict = ticket_dict.get('event')
 
                 event_name = event_dict.get('name')
@@ -144,24 +173,31 @@ class TerminalControler():
                 auditorium_address = auditorium_dict.get('address')
 
                 auditorium = Auditorium(name=auditorium_name, address=auditorium_address)
-                for audi in auditoriums:
-                    if audi.name == auditorium_name and audi.address == auditorium_address:
-                        auditorium = audi
-                auditorium.save()
+                for audi_in_db in auditoriums:
+                    if audi_in_db.name == auditorium_name and audi_in_db.address == auditorium_address:
+                        audi_do_not_exist = False
+                        auditorium = audi_in_db
+                        break
+                if audi_do_not_exist:
+                    auditorium.save()
 
                 event = Event(name=event_name, time=event_time, auditorium=auditorium)
-                for ev in events:
-                    if ev.name == event_name:
-                        event = ev
-                event.save()
+                for event_in_db in events:
+                    if event_in_db.name == event_name:
+                        event_do_not_exist = False
+                        event = event_in_db
+                        break
+                if event_do_not_exist:
+                    event.save()
 
-                ticket = Ticket(ticketHash=ticketHash, owner=owner, event=event)
+                ticket = Ticket(ticketHash=ticketHash, status=ticket_status,
+                                owner=owner, event=event)
                 for tick in tickets:
                     if tick.ticketHash == ticketHash:
                         ticket = tick
                 ticket.save()
         except requests.exceptions.Timeout:
-            print('TIMEOUT: OBTAIN TICKET LIST')
+            print('TIMEOUT OBTAIN TICKET LIST')
         except ValueError:
             print('INVALID JSON FORMAT')
             print(response.text)
@@ -219,14 +255,18 @@ class TerminalControler():
         # Post to Gestion website our ip address
         self.sendIPtoGestionWebsite(ip)
         # Query Gestion website for the terminal list
+        Terminal.objects.all().delete()   #-> TODO reactivate this line when GET tickets/ on Gestion Work
+        Ticket.objects.all().delete()
+        Event.objects.all().delete()
+        Auditorium.objects.all().delete()
         self.obtainTerminalsFromGestionWebsite(ip)
         # IF no terminal in DB Query Gestion website for ticketsList
-        # terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
-        # if len(list(terminals)) == 0:
-        #     self.obtainTicketsFromGestionWebsite()
-        # # Else Query first PI in the list for the tickets
-        # else:
-        #     self.obtainTicketList(ipAddress=terminals[0].ipAddress)
+        terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
+        if len(list(terminals)) == 0:
+            self.obtainTicketsFromGestionWebsite(ip)
+        # Else Query first PI in the list for the tickets
+        else:
+            self.obtainTicketList(ipAddress=terminals[0].ipAddress)
 
     def launch(self):
         self.run()
