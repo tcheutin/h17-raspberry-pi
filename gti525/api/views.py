@@ -92,7 +92,6 @@ class TicketValidation(APIView):
                 else:
                     payload = serializers.errors
                     httpResponse = status.HTTP_400_BAD_REQUEST
-        logValidation = MobileCommLog(ticket, httpResponse)
         MobileCommLog.objects.create(ticketHash=ticket.ticketHash, httpResponse=httpResponse, time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         return Response(payload, status=httpResponse)
 
