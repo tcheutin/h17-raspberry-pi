@@ -1,10 +1,12 @@
-from api.models import Terminal, Ticket, Auditorium, Event
+from api.models import Terminal, Ticket, Auditorium, Event, MobileCommLog
 import requests
 import time
 import netifaces as ni
 from api.serializers import TicketSerializer
 from io import StringIO
 from rest_framework.parsers import JSONParser
+from api.serializers import ValidationLogSerializer
+from rest_framework.renderers import JSONRenderer
 
 
 class TerminalControler():
