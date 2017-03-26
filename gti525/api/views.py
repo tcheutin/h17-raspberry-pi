@@ -56,7 +56,7 @@ class TicketValidation(APIView):
         elif httpCode == 404:
             return 'Invalid Ticket'
         elif httpCode == 409:
-            return 'Ticekt Already Validated'
+            return 'Ticket Already Validated'
         else:
             return 'INVALID HTTP CODE'
 
