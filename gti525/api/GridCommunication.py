@@ -7,6 +7,7 @@ from io import StringIO
 from rest_framework.parsers import JSONParser
 from api.serializers import ValidationLogSerializer
 from rest_framework.renderers import JSONRenderer
+from django.db import connection
 
 
 class TerminalControler():
@@ -243,6 +244,10 @@ class TerminalControler():
 
     def run(self):
         time.sleep(3) #To let te server start before sending a request to it
+        # Write the mobile API KEY to the DB
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM rest_framework_api_key_apikey")
+            cursor.execute("INSERT INTO rest_framework_api_key_apikey VALUES('1','','','mobile','ooXein0ZieZohfoh0phuCee0eeng6aomu6tei7le9eiHo4Fai0')")
         try:
             config_file = open('interface.config', 'r')
             interface = config_file.readline()
