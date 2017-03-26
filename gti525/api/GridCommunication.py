@@ -9,6 +9,7 @@ from api.serializers import ValidationLogSerializer
 from rest_framework.renderers import JSONRenderer
 from django.db import connection
 import json
+import time
 
 
 class TerminalControler():
@@ -160,47 +161,51 @@ class TerminalControler():
             tickets_dict = response.json()
             audi_do_not_exist = True
             event_do_not_exist = True
-            for ticket_dict in tickets_dict:
-                tickets = Ticket.objects.all()
-                auditoriums = Auditorium.objects.all()
-                events = Event.objects.all()
+            if tickets_dict != 'No event found' :
+                for ticket_dict in tickets_dict:
+                    tickets = Ticket.objects.all()
+                    auditoriums = Auditorium.objects.all()
+                    events = Event.objects.all()
 
-                ticketHash = ticket_dict.get('id')
-                owner = ticket_dict.get('owner')
-                ticket_status = 'Non-Validated'
-                event_dict = ticket_dict.get('event')
+                    ticketHash = ticket_dict.get('id')
+                    owner = ticket_dict.get('owner')
+                    ticket_status = 'Non-Validated'
+                    event_dict = ticket_dict.get('event')
 
-                event_name = event_dict.get('name')
-                event_time = event_dict.get('time')
-                auditorium_dict = event_dict.get('auditorium')
+                    event_name = event_dict.get('name')
+                    event_time = event_dict.get('time')
+                    auditorium_dict = event_dict.get('auditorium')
 
-                auditorium_name = auditorium_dict.get('name')
-                auditorium_address = auditorium_dict.get('address')
+                    auditorium_name = auditorium_dict.get('name')
+                    auditorium_address = auditorium_dict.get('address')
 
-                auditorium = Auditorium(name=auditorium_name, address=auditorium_address)
-                for audi_in_db in auditoriums:
-                    if audi_in_db.name == auditorium_name and audi_in_db.address == auditorium_address:
-                        audi_do_not_exist = False
-                        auditorium = audi_in_db
-                        break
-                if audi_do_not_exist:
-                    auditorium.save()
+                    auditorium = Auditorium(name=auditorium_name, address=auditorium_address)
+                    for audi_in_db in auditoriums:
+                        if audi_in_db.name == auditorium_name and audi_in_db.address == auditorium_address:
+                            audi_do_not_exist = False
+                            auditorium = audi_in_db
+                            break
+                    if audi_do_not_exist:
+                        auditorium.save()
 
-                event = Event(name=event_name, time=event_time, auditorium=auditorium)
-                for event_in_db in events:
-                    if event_in_db.name == event_name:
-                        event_do_not_exist = False
-                        event = event_in_db
-                        break
-                if event_do_not_exist:
-                    event.save()
+                    event = Event(name=event_name, time=event_time, auditorium=auditorium)
+                    for event_in_db in events:
+                        if event_in_db.name == event_name:
+                            event_do_not_exist = False
+                            event = event_in_db
+                            break
+                    if event_do_not_exist:
+                        event.save()
 
-                ticket = Ticket(ticketHash=ticketHash, status=ticket_status,
-                                owner=owner, event=event)
-                for tick in tickets:
-                    if tick.ticketHash == ticketHash:
-                        ticket = tick
-                ticket.save()
+                    ticket = Ticket(ticketHash=ticketHash, status=ticket_status,
+                                    owner=owner, event=event)
+                    for tick in tickets:
+                        if tick.ticketHash == ticketHash:
+                            ticket = tick
+                    ticket.save()
+            else:
+                print('Received: No event found retry in 1 sec')
+                time.sleep(1)
         except requests.exceptions.Timeout:
             print('TIMEOUT OBTAIN TICKET LIST')
         except ValueError:
@@ -281,6 +286,5 @@ class TerminalControler():
                 self.obtainTicketList(ipAddress=terminals[0].ipAddress)
             tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
 
-        self.sendValidationStats(ip)
     def launch(self):
         self.run()
