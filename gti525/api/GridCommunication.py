@@ -131,11 +131,14 @@ class TerminalControler():
                 if ip != address:
                     terminal = Terminal(status=status, ipAddress=address)
                     terminal.save()
+            return True
         except requests.exceptions.Timeout:
             print('TIMEOUT: OBTAIN TERMINAL LIST')
+            return False
         except ValueError:
             print('INVALID JSON FORMAT')
             print(response.text)
+            return False
 
 
     def obtainTicketsFromGestionWebsite(self, ip):
@@ -213,8 +216,10 @@ class TerminalControler():
             f.write('\nResponse: \n')
             f.write(response.text)
             f.close()
+            return True
         except requests.exceptions.Timeout:
             print('TIMEOUT: POST IP ADDRESS')
+            return False
 
     def sendValidationStats(self):
         url = self.heroku_url+'log/'
@@ -231,9 +236,6 @@ class TerminalControler():
         logsValidation = MobileCommLog.objects.all()
         serializer = ValidationLogSerializer(logsValidation, many=True)
         payload = JSONRenderer().render(serializer.data)
-        # print(param)
-        # print(payload)
-        # print('\n')
         try:
             response = requests.post(url, headers=self.headers, timeout=2, params=param, data=payload)
         except requests.exceptions.Timeout:
@@ -252,21 +254,27 @@ class TerminalControler():
         ip = ni.ifaddresses(interface)[2][0]['addr']
         print('Local IP Address for '+interface+': '+ip)
 
-        # Post to Gestion website our ip address
-        self.sendIPtoGestionWebsite(ip)
-        # Query Gestion website for the terminal list
-        Terminal.objects.all().delete()   #-> TODO reactivate this line when GET tickets/ on Gestion Work
+        Terminal.objects.all().delete()
         Ticket.objects.all().delete()
         Event.objects.all().delete()
         Auditorium.objects.all().delete()
-        self.obtainTerminalsFromGestionWebsite(ip)
+        # Post to Gestion website our ip address
+        while not self.sendIPtoGestionWebsite(ip):
+            pass
+        # Query Gestion website for the terminal list
+        while not self.obtainTerminalsFromGestionWebsite(ip):
+            pass
+
         # IF no terminal in DB Query Gestion website for ticketsList
+        tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
         terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
-        if len(list(terminals)) == 0:
-            self.obtainTicketsFromGestionWebsite(ip)
-        # Else Query first PI in the list for the tickets
-        else:
-            self.obtainTicketList(ipAddress=terminals[0].ipAddress)
+        while len(list(tickets))==0:
+            if len(list(terminals)) == 0:
+                self.obtainTicketsFromGestionWebsite(ip)
+            # Else Query first PI in the list for the tickets
+            else:
+                self.obtainTicketList(ipAddress=terminals[0].ipAddress)
+            tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
 
     def launch(self):
         self.run()
