@@ -163,7 +163,7 @@ class TerminalControler():
             tickets_dict = response.json()
             audi_do_not_exist = True
             event_do_not_exist = True
-            if tickets_dict != 'No event found' :
+            if not isinstance(tickets_dict, str) :
                 for ticket_dict in tickets_dict:
                     tickets = Ticket.objects.all()
                     auditoriums = Auditorium.objects.all()
@@ -255,7 +255,13 @@ class TerminalControler():
         headers['ipAddress'] = ip
         try:
             response = requests.get(url, headers=self.headers, timeout=2)
-            if response.get('isClose') == 'True':
+            print('GET: '+url+' | Headers: '+str(headers))
+            f = open('GET_IS_CLOSE.log', 'w')
+            f.write('POST: '+url+' | Headers: '+str(headers))
+            f.write('\nResponse: \n')
+            f.write(response.text)
+            f.close()
+            if 'true' in response.text:
                 return True
         except requests.exceptions.Timeout:
             print('TIMEOUT: GET EVENT IS CLOSE')
@@ -301,17 +307,20 @@ class TerminalControler():
             tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
 
 
-        eventIsActive = True
         while True:
             if self.verifyEventIsClose(ip):
-                # sendValidationStats(ip) TODO use this one when PR #68 is merge
-                sendValidationStats(self)
+                print('======================================== Event is close ========================================')
+                print('Send log')
+                self.sendValidationStats(ip)
+                print('Done\nBack up DB')
                 copyfile('gti525/db.sqlite3', 'gti525/db.backup.'+datetime.now().strftime('%Y-%m-%d_%H:%M:%S')+'.sqlite3')
                 with connection.cursor() as cursor:
                     cursor.execute("DELETE FROM api_mobilecommlog")
+                print('Done')
+                break
             else:
                 print('Not close')
-                time.sleep(10)
+                time.sleep(3)
 
     def launch(self):
         self.run()
