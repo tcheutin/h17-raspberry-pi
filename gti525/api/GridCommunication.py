@@ -10,6 +10,8 @@ from rest_framework.renderers import JSONRenderer
 from django.db import connection
 import json
 import time
+from shutil import copyfile
+from datetime import datetime
 
 
 class TerminalControler():
@@ -247,6 +249,18 @@ class TerminalControler():
         except requests.exceptions.Timeout:
             print('TIMEOUT: POST LOG')
 
+    def verifyEventIsClose(self, ip):
+        url = self.heroku_url+'close/'
+        headers = self.headers
+        headers['ipAddress'] = ip
+        try:
+            response = requests.get(url, headers=self.headers, timeout=2)
+            if response.get('isClose') == 'True':
+                return True
+        except requests.exceptions.Timeout:
+            print('TIMEOUT: GET EVENT IS CLOSE')
+        return False
+
     def run(self):
         time.sleep(3) #To let te server start before sending a request to it
         # Write the mobile API KEY to the DB
@@ -270,10 +284,10 @@ class TerminalControler():
         Auditorium.objects.all().delete()
         # Post to Gestion website our ip address
         while not self.sendIPtoGestionWebsite(ip):
-            pass
+           pass
         # Query Gestion website for the terminal list
         while not self.obtainTerminalsFromGestionWebsite(ip):
-            pass
+           pass
 
         # IF no terminal in DB Query Gestion website for ticketsList
         tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
@@ -285,6 +299,19 @@ class TerminalControler():
             else:
                 self.obtainTicketList(ipAddress=terminals[0].ipAddress)
             tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
+
+
+        eventIsActive = True
+        while True:
+            if self.verifyEventIsClose(ip):
+                # sendValidationStats(ip) TODO use this one when PR #68 is merge
+                sendValidationStats(self)
+                copyfile('gti525/db.sqlite3', 'gti525/db.backup.'+datetime.now().strftime('%Y-%m-%d_%H:%M:%S')+'.sqlite3')
+                with connection.cursor() as cursor:
+                    cursor.execute("DELETE FROM api_mobilecommlog")
+            else:
+                print('Not close')
+                time.sleep(10)
 
     def launch(self):
         self.run()
