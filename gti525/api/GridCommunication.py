@@ -10,6 +10,8 @@ from rest_framework.renderers import JSONRenderer
 from django.db import connection
 import json
 import time
+from shutil import copyfile
+from datetime import datetime
 
 
 class TerminalControler():
@@ -161,7 +163,7 @@ class TerminalControler():
             tickets_dict = response.json()
             audi_do_not_exist = True
             event_do_not_exist = True
-            if tickets_dict != 'No event found' :
+            if not isinstance(tickets_dict, str) :
                 for ticket_dict in tickets_dict:
                     tickets = Ticket.objects.all()
                     auditoriums = Auditorium.objects.all()
@@ -247,6 +249,24 @@ class TerminalControler():
         except requests.exceptions.Timeout:
             print('TIMEOUT: POST LOG')
 
+    def verifyEventIsClose(self, ip):
+        url = self.heroku_url+'close/'
+        headers = self.headers
+        headers['ipAddress'] = ip
+        try:
+            response = requests.get(url, headers=self.headers, timeout=2)
+            print('GET: '+url+' | Headers: '+str(headers))
+            f = open('GET_IS_CLOSE.log', 'w')
+            f.write('POST: '+url+' | Headers: '+str(headers))
+            f.write('\nResponse: \n')
+            f.write(response.text)
+            f.close()
+            if 'true' in response.text:
+                return True
+        except requests.exceptions.Timeout:
+            print('TIMEOUT: GET EVENT IS CLOSE')
+        return False
+
     def run(self):
         time.sleep(3) #To let te server start before sending a request to it
         # Write the mobile API KEY to the DB
@@ -270,10 +290,10 @@ class TerminalControler():
         Auditorium.objects.all().delete()
         # Post to Gestion website our ip address
         while not self.sendIPtoGestionWebsite(ip):
-            pass
+           pass
         # Query Gestion website for the terminal list
         while not self.obtainTerminalsFromGestionWebsite(ip):
-            pass
+           pass
 
         # IF no terminal in DB Query Gestion website for ticketsList
         tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
@@ -285,6 +305,22 @@ class TerminalControler():
             else:
                 self.obtainTicketList(ipAddress=terminals[0].ipAddress)
             tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
+
+
+        while True:
+            if self.verifyEventIsClose(ip):
+                print('======================================== Event is close ========================================')
+                print('Send log')
+                self.sendValidationStats(ip)
+                print('Done\nBack up DB')
+                copyfile('gti525/db.sqlite3', 'gti525/db.backup.'+datetime.now().strftime('%Y-%m-%d_%H:%M:%S')+'.sqlite3')
+                with connection.cursor() as cursor:
+                    cursor.execute("DELETE FROM api_mobilecommlog")
+                print('Done')
+                break
+            else:
+                print('Not close')
+                time.sleep(3)
 
     def launch(self):
         self.run()
