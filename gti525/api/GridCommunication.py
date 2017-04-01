@@ -285,7 +285,7 @@ class TerminalControler():
         ip = ni.ifaddresses(interface)[2][0]['addr']
         print('Local IP Address for '+interface+': '+ip)
 
-        Terminal.objects.all().delete()
+        # Terminal.objects.all().delete()
         # Ticket.objects.all().delete()
         # Event.objects.all().delete()
         # Auditorium.objects.all().delete()
