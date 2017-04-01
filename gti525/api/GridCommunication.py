@@ -27,7 +27,7 @@ class TerminalControler():
             url = 'http://'+ipAddress+':8000/api/tickets/'
             print('GET: '+url)
             response = requests.get(url, headers=self.headers, timeout=2)
-            f = open('GET_TICKET_LIST_INTERNAL.log', 'w')
+            f = open('log/GET_TICKET_LIST_INTERNAL.log', 'w')
             f.write('GET: '+ url+'\nResponse\n')
             f.write(response.text)
             f.close()
@@ -124,7 +124,7 @@ class TerminalControler():
         try:
             print('GET: '+url)
             response = requests.get(url, headers=headers, timeout=2)
-            f = open('GET_TERMINAL_LIST.log', 'w')
+            f = open('log/GET_TERMINAL_LIST.log', 'w')
             f.write('POST: '+url+' | Headers: '+str(headers))
             f.write('\nResponse: \n')
             f.write(response.text)
@@ -156,7 +156,7 @@ class TerminalControler():
             events = Event.objects.all()
             print('GET: '+url)
             response = requests.get(url, headers=self.headers, timeout=10)
-            f = open('GET_TICKET_LIST_GESTION.log', 'w')
+            f = open('log/GET_TICKET_LIST_GESTION.log', 'w')
             f.write('GET: '+ url+' | Headers: '+str(headers)+'\nResponse\n')
             f.write(response.text)
             f.close()
@@ -220,7 +220,7 @@ class TerminalControler():
         try:
             print('POST: '+url+' | Payload: '+str(payload))
             response = requests.post(url, headers=self.headers, timeout=2, data=payload)
-            f = open('POST_IP_TO_GESTION.log', 'w')
+            f = open('log/POST_IP_TO_GESTION.log', 'w')
             f.write('POST: '+url+' | Payload: '+str(payload))
             f.write('\nResponse: \n')
             f.write(response.text)
@@ -240,7 +240,7 @@ class TerminalControler():
         payload = json.dumps(serializer.data)
         try:
             response = requests.post(url, headers=headers, timeout=2, data=payload)
-            f = open('POST_LOG.log', 'w')
+            f = open('log/POST_LOG.log', 'w')
             f.write('POST: '+url+' | Headers: '+str(headers))
             f.write('\nPayload: '+str(payload))
             f.write('\nResponse: \n')
@@ -256,7 +256,7 @@ class TerminalControler():
         try:
             response = requests.get(url, headers=self.headers, timeout=2)
             print('GET: '+url+' | Headers: '+str(headers))
-            f = open('GET_IS_CLOSE.log', 'w')
+            f = open('log/GET_IS_CLOSE.log', 'w')
             f.write('POST: '+url+' | Headers: '+str(headers))
             f.write('\nResponse: \n')
             f.write(response.text)
