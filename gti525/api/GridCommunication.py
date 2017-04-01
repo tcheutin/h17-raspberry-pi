@@ -111,7 +111,7 @@ class TerminalControler():
                 url = 'http://'+terminal.ipAddress+':8000/api/ticket/validate/'+ticketHash+'/'
                 print('Request PATCH: '+url)
                 try:
-                    response = requests.patch(url, headers=headers, timeout=1)
+                    response = requests.patch(url, headers=self.headers, timeout=1)
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
