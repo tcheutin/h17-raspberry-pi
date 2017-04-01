@@ -23,10 +23,10 @@ done
 
 # Upgrade
 apt-get update
-apt-get upgrade -f
+apt-get upgrade -y
 
 # We install dependancy
-apt-get install -f bind9 bind9utils dnsutils
+apt-get install -y bind9 bind9utils dnsutils
 
 # we enable log
 logging="
@@ -54,7 +54,7 @@ echo $namedConfLocal >> /etc/bind/named.conf.local
 
 # We specifie our zone
 mkdir /etc/bind/zones
-sed -e "s/\${IP}/'$IP'/" config/db.gti525.org > /etc/bin/zones/db.gti525.org
+sed -e "s/\${IP}/'$IP'/" config/db.gti525.org > /etc/bind/zones/db.gti525.org
 
 # Restart service
 /etc/init.d/bind9 restart

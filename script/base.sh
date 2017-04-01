@@ -31,12 +31,15 @@ cd ..
 FOLDER=$(pwd)
 
 # Install project requirement
-pip install -r requirement.txt
+pip install -r requirements.txt
 
 # We start the project
 cd gti525
 sed -e "s/\${FOLDER}/'$FOLDER'/" config/ehall.init > /etc/init.d/ehall.init
 chmod +x /etc/init.d/ehall.init
+
+python $FOLDER/gti525/manage.py makemigrations
+python $FOLDER/gti525/manage.py migrate
 
 ######### REMOVE - FOR DEV ONLY #########
 # Insert API_KEY into BD
