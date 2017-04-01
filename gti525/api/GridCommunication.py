@@ -285,43 +285,43 @@ class TerminalControler():
         ip = ni.ifaddresses(interface)[2][0]['addr']
         print('Local IP Address for '+interface+': '+ip)
 
-        # Terminal.objects.all().delete()
-        # Ticket.objects.all().delete()
-        # Event.objects.all().delete()
-        # Auditorium.objects.all().delete()
-        # # Post to Gestion website our ip address
-        # while not self.sendIPtoGestionWebsite(ip):
-        #    pass
-        # # Query Gestion website for the terminal list
-        # while not self.obtainTerminalsFromGestionWebsite(ip):
-        #    pass
-        #
-        # # IF no terminal in DB Query Gestion website for ticketsList
-        # tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
-        # terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
-        # while len(list(tickets))==0:
-        #     if len(list(terminals)) == 0:
-        #         self.obtainTicketsFromGestionWebsite(ip)
-        #     # Else Query first PI in the list for the tickets
-        #     else:
-        #         self.obtainTicketList(ipAddress=terminals[0].ipAddress)
-        #     tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
-        #
-        #
-        # while True:
-        #     if self.verifyEventIsClose(ip):
-        #         print('======================================== Event is close ========================================')
-        #         print('Send log')
-        #         self.sendValidationStats(ip)
-        #         print('Done\nBack up DB')
-        #         copyfile('gti525/db.sqlite3', 'gti525/db.backup.'+datetime.now().strftime('%Y-%m-%d_%H:%M:%S')+'.sqlite3')
-        #         with connection.cursor() as cursor:
-        #             cursor.execute("DELETE FROM api_mobilecommlog")
-        #         print('Done')
-        #         break
-        #     else:
-        #         print('Not close')
-        #         time.sleep(3)
+        Terminal.objects.all().delete()
+        Ticket.objects.all().delete()
+        Event.objects.all().delete()
+        Auditorium.objects.all().delete()
+        # Post to Gestion website our ip address
+        while not self.sendIPtoGestionWebsite(ip):
+           pass
+        # Query Gestion website for the terminal list
+        while not self.obtainTerminalsFromGestionWebsite(ip):
+           pass
+
+        # IF no terminal in DB Query Gestion website for ticketsList
+        tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
+        terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
+        while len(list(tickets))==0:
+            if len(list(terminals)) == 0:
+                self.obtainTicketsFromGestionWebsite(ip)
+            # Else Query first PI in the list for the tickets
+            else:
+                self.obtainTicketList(ipAddress=terminals[0].ipAddress)
+            tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
+
+
+        while True:
+            if self.verifyEventIsClose(ip):
+                print('======================================== Event is close ========================================')
+                print('Send log')
+                self.sendValidationStats(ip)
+                print('Done\nBack up DB')
+                copyfile('gti525/db.sqlite3', 'gti525/db.backup.'+datetime.now().strftime('%Y-%m-%d_%H:%M:%S')+'.sqlite3')
+                with connection.cursor() as cursor:
+                    cursor.execute("DELETE FROM api_mobilecommlog")
+                print('Done')
+                break
+            else:
+                print('Not close')
+                time.sleep(3)
 
     def launch(self):
         self.run()
