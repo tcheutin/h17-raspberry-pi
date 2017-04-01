@@ -273,6 +273,7 @@ class TerminalControler():
         with connection.cursor() as cursor:
             cursor.execute("DELETE FROM rest_framework_api_key_apikey")
             cursor.execute("INSERT INTO rest_framework_api_key_apikey VALUES('1','','','mobile','ooXein0ZieZohfoh0phuCee0eeng6aomu6tei7le9eiHo4Fai0')")
+            cursor.execute("INSERT INTO rest_framework_api_key_apikey VALUES('2','','','pi','a677abfcc88c8126deedd719202e50922')")
         try:
             config_file = open('interface.config', 'r')
             interface = config_file.readline()
