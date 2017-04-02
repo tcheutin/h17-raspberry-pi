@@ -96,7 +96,6 @@ class TerminalControler():
                     response = requests.get(url, headers=self.headers, timeout=1)
                     tickets = response.json()
                     serializer = TicketSerializer(data=tickets)
-                    print('==========Serializer: '+ serializer.txt)
                     if serializer.is_valid():
                         ticket = serializer.data
                         print('=====INTERNAL QUERY STATUS: '+ticket.get('status'))
