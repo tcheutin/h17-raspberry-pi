@@ -3,6 +3,8 @@ import os
 import sys
 import threading
 
+have_receive_ticket = False
+
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gti525.settings")
     try:
@@ -21,6 +23,7 @@ if __name__ == "__main__":
             )
         raise
 
+    have_receive_ticket = False
     if 'runserver' in sys.argv:
         from api.GridCommunication import TerminalControler
         t1 = threading.Thread(name="DB Remote Init", target=TerminalControler().launch)
