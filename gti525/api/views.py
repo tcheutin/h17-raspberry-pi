@@ -8,7 +8,7 @@ from datetime import datetime
 from django.utils import timezone
 from api.GridCommunication import TerminalControler
 from django.core.exceptions import ObjectDoesNotExist
-import requests
+import manage as main
 
 class TerminalList(APIView):
     ''' List all terminal or create a new terminal. '''
@@ -29,7 +29,7 @@ class TicketList(APIView):
     ''' List all ticket. '''
 
     def get(self, request, format=None):
-        if TerminalControler.have_receive_ticket:
+        if main.have_receive_ticket:
             # This code was taken here: http://stackoverflow.com/a/4581997
             x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
             if x_forwarded_for:

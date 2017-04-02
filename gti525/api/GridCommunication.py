@@ -12,10 +12,10 @@ import json
 import time
 from shutil import copyfile
 from datetime import datetime
+import manage as main
 
 
 class TerminalControler():
-    have_receive_ticket = False
     headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
     heroku_url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/'
 
@@ -273,12 +273,6 @@ class TerminalControler():
         headers['ipAddress'] = ip
         try:
             response = requests.get(url, headers=self.headers, timeout=2)
-            print('GET: '+url+' | Headers: '+str(headers))
-            f = open('log/GET_IS_CLOSE.log', 'w')
-            f.write('POST: '+url+' | Headers: '+str(headers))
-            f.write('\nResponse: \n')
-            f.write(response.text)
-            f.close()
             if 'true' in response.text:
                 return True
         except requests.exceptions.Timeout:
@@ -342,13 +336,12 @@ class TerminalControler():
             if len(list(terminals)) == 0 or isMaster:
                 isMaster = True
                 self.obtainTicketsFromGestionWebsite(ip)
-                self.have_receive_ticket = True
             # Else Query first PI in the list for the tickets
             else:
                 self.obtainTicketList(ipAddress=terminals[0].ipAddress)
             tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
-
-
+        main.have_receive_ticket = True
+        print('System ready to perform')
         while True:
             if self.verifyEventIsClose(ip):
                 print('======================================== Event is close ========================================')
@@ -361,7 +354,6 @@ class TerminalControler():
                 print('Done')
                 break
             else:
-                print('Not close')
                 time.sleep(10)
 
     def launch(self):
