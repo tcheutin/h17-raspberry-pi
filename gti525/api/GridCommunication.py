@@ -342,7 +342,7 @@ class TerminalControler():
                 break
             else:
                 print('Not close')
-                time.sleep(3)
+                time.sleep(10)
 
     def launch(self):
         self.run()
