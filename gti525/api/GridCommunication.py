@@ -96,8 +96,10 @@ class TerminalControler():
                     response = requests.get(url, headers=self.headers, timeout=1)
                     tickets = response.json()
                     serializer = TicketSerializer(data=tickets)
+                    print('==========Serializer: '+ serializer.txt)
                     if serializer.is_valid():
                         ticket = serializer.data
+                        print('=====INTERNAL QUERY STATUS: '+ticket.get('status'))
                         if ticket.get('status') == 'Validated':
                             isAlreadyValidated = True
                     else:
@@ -109,12 +111,18 @@ class TerminalControler():
                     terminal.save()
                     number_of_disc_terminal = number_of_disc_terminal + 1
                     print('TIMEOUT')
+        print('==========Number of TERM: ' + str(number_of_terminal))
+        print('==========Number of DISC: ' + str(number_of_disc_terminal))
         if number_of_terminal == number_of_disc_terminal:
-            Terminal.objects.raw('UPDATE api_terminal SET status = Connected')
+            for terminal in terminals:
+                terminal.status = 'Connected'
+                terminal.save()
         return isAlreadyValidated
 
     def validateTicket(self, ticketHash):
         terminals = Terminal.objects.all()
+        number_of_terminal = len(list(terminals))
+        number_of_disc_terminal = 0
         for terminal in terminals:
             if terminal.status == 'Connected':
                 url = 'http://'+terminal.ipAddress+':8000/api/ticket/validate/'+ticketHash+'/'
@@ -124,7 +132,14 @@ class TerminalControler():
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
+                    number_of_disc_terminal = number_of_disc_terminal + 1
                     print('TIMEOUT')
+        print('==========Number of TERM: ' + str(number_of_terminal))
+        print('==========Number of DISC: ' + str(number_of_disc_terminal))
+        if number_of_terminal == number_of_disc_terminal:
+            for terminal in terminals:
+                terminal.status = 'Connected'
+                terminal.save()
 
     def obtainTerminalsFromGestionWebsite(self, ip):
         url = self.heroku_url+'terminals/'
