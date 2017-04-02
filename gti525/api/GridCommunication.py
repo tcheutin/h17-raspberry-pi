@@ -94,17 +94,10 @@ class TerminalControler():
                 print('Request GET: '+url)
                 try:
                     response = requests.get(url, headers=self.headers, timeout=1)
-                    tickets = response.json()
-                    serializer = TicketSerializer(data=tickets)
-                    if serializer.is_valid():
-                        ticket = serializer.data
-                        print('=====INTERNAL QUERY STATUS: '+ticket.get('status'))
+                    ticket_dict = response.json()
+                    for ticket in ticket_dict:
                         if ticket.get('status') == 'Validated':
                             isAlreadyValidated = True
-                    else:
-                        print('Serializer is not valid:')
-                        for error in serializer.errors:
-                            print('Error: '+error)
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
