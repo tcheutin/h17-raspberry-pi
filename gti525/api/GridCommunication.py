@@ -100,9 +100,12 @@ class TerminalControler():
                     f.write(response.text)
                     f.close()
                     ticket_dict = response.json()
-                    for ticket in ticket_dict:
-                        if ticket.get('status') == 'Validated':
+                    if isinstance(ticket_dict, str):
+                        print('IS STR')
+                        if ticket_dict.get('status') == 'Validated':
                             isAlreadyValidated = True
+                    else:
+                        print('IS NOT STR')
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
