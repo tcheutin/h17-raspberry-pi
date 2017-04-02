@@ -15,6 +15,7 @@ from datetime import datetime
 
 
 class TerminalControler():
+    have_receive_ticket = False
     headers = {'api-Key': 'a677abfcc88c8126deedd719202e50922'}
     heroku_url = 'https://gti525-gestionnaire-salle.herokuapp.com/api/'
 
@@ -34,7 +35,7 @@ class TerminalControler():
             tickets_dict = response.json()
             audi_do_not_exist = True
             event_do_not_exist = True
-            if tickets_dict:
+            if tickets_dict and 'NotReady' not in tickets_dict:
                 for ticket_dict in tickets_dict:
                     tickets = Ticket.objects.all()
                     auditoriums = Auditorium.objects.all()
@@ -341,6 +342,7 @@ class TerminalControler():
             if len(list(terminals)) == 0 or isMaster:
                 isMaster = True
                 self.obtainTicketsFromGestionWebsite(ip)
+                self.have_receive_ticket = True
             # Else Query first PI in the list for the tickets
             else:
                 self.obtainTicketList(ipAddress=terminals[0].ipAddress)
