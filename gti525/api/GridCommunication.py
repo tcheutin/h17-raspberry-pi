@@ -100,19 +100,14 @@ class TerminalControler():
                     f.write(response.text)
                     f.close()
                     ticket_dict = response.json()
-                    if isinstance(ticket_dict, str):
-                        print('IS STR')
+                    if isinstance(ticket_dict, dict):
                         if ticket_dict.get('status') == 'Validated':
                             isAlreadyValidated = True
-                    else:
-                        print('IS NOT STR')
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
                     number_of_disc_terminal = number_of_disc_terminal + 1
                     print('TIMEOUT')
-        print('==========Number of TERM: ' + str(number_of_terminal))
-        print('==========Number of DISC: ' + str(number_of_disc_terminal))
         if number_of_terminal == number_of_disc_terminal:
             for terminal in terminals:
                 terminal.status = 'Connected'
@@ -134,8 +129,6 @@ class TerminalControler():
                     terminal.save()
                     number_of_disc_terminal = number_of_disc_terminal + 1
                     print('TIMEOUT')
-        print('==========Number of TERM: ' + str(number_of_terminal))
-        print('==========Number of DISC: ' + str(number_of_disc_terminal))
         if number_of_terminal == number_of_disc_terminal:
             for terminal in terminals:
                 terminal.status = 'Connected'
