@@ -18,6 +18,15 @@ class TerminalSerializer(serializers.ModelSerializer):
         model = Terminal
         fields = ('ipAddress', 'status')
 
+    def create(self, validated_data):
+    borne_ip = validated_data.get('ipAddress', None)
+    if borne_ip is not None:
+        terminal = Terminal.objects.filter(ipAddress=borne_ip)
+        if terminal is not None:
+            return terminal
+    terminal = Terminal.objects.create(**validated_data)
+    return terminal
+
 class TicketSerializer(serializers.ModelSerializer):
     event = EventSerializer(read_only=True)
     class Meta:

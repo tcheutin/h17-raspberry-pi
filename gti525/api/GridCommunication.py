@@ -267,6 +267,22 @@ class TerminalControler():
             print('TIMEOUT: GET EVENT IS CLOSE')
         return False
 
+    def sendIPtoPI(self, pi_ip, my_ip):
+        url = 'http://'+pi_ip+':8000/api/terminal/'
+        payload = {'ipAddress': my_ip, 'status': 'Connected'}
+        try:
+            response = requests.post(url, headers=self.headers, data=payload, timeout=2)
+            print('POST: '+url+' | Payload: '+str(payload))
+            f = open('log/POST_IP_TO_PI.log', 'w')
+            f.write('POST: '+url+' | Payload: '+str(payload))
+            f.write('\nResponse: \n')
+            f.write(response.text)
+            f.close()
+            return False
+        except requests.exceptions.Timeout:
+            print('TIMEOUT: POST IP TO PI')
+            return True
+
     def run(self):
         time.sleep(3) #To let te server start before sending a request to it
         # Write the mobile API KEY to the DB
@@ -299,6 +315,11 @@ class TerminalControler():
         # IF no terminal in DB Query Gestion website for ticketsList
         tickets = Ticket.objects.raw('SELECT * FROM api_ticket')
         terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
+
+        for terminal in terminals:
+            while self.sendIPtoPI(my_ip=self.ip, pi_ip=terminal.ipAddress):
+                pass
+
         while len(list(tickets))==0:
             if len(list(terminals)) == 0:
                 self.obtainTicketsFromGestionWebsite(ip)
