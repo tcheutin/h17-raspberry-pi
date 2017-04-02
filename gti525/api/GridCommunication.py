@@ -317,7 +317,7 @@ class TerminalControler():
         terminals = Terminal.objects.raw('SELECT * FROM api_terminal WHERE "status"="Connected"')
 
         for terminal in terminals:
-            while self.sendIPtoPI(my_ip=self.ip, pi_ip=terminal.ipAddress):
+            while self.sendIPtoPI(my_ip=ip, pi_ip=terminal.ipAddress):
                 pass
 
         while len(list(tickets))==0:
