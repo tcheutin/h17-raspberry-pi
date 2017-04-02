@@ -86,6 +86,8 @@ class TerminalControler():
     def verifyTicketValidation(self, ticketHash):
         isAlreadyValidated = False
         terminals = Terminal.objects.all()
+        number_of_terminal = len(list(terminals))
+        number_of_disc_terminal = 0
         for terminal in terminals:
             if terminal.status == 'Connected':
                 url = 'http://'+terminal.ipAddress+':8000/api/ticket/'+ticketHash+'/'
@@ -105,7 +107,10 @@ class TerminalControler():
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
+                    number_of_disc_terminal = number_of_disc_terminal + 1
                     print('TIMEOUT')
+        if number_of_terminal == number_of_disc_terminal:
+            Terminal.objects.raw('UPDATE api_terminal SET status = Connected')
         return isAlreadyValidated
 
     def validateTicket(self, ticketHash):
