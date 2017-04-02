@@ -94,6 +94,11 @@ class TerminalControler():
                 print('Request GET: '+url)
                 try:
                     response = requests.get(url, headers=self.headers, timeout=1)
+                    f = open('log/GET_INTERNAL_TICKET.log', 'w')
+                    f.write('GET: '+url)
+                    f.write('\nResponse: \n')
+                    f.write(response.text)
+                    f.close()
                     ticket_dict = response.json()
                     for ticket in ticket_dict:
                         if ticket.get('status') == 'Validated':
