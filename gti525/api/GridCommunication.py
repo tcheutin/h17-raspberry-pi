@@ -86,30 +86,38 @@ class TerminalControler():
     def verifyTicketValidation(self, ticketHash):
         isAlreadyValidated = False
         terminals = Terminal.objects.all()
+        number_of_terminal = len(list(terminals))
+        number_of_disc_terminal = 0
         for terminal in terminals:
             if terminal.status == 'Connected':
                 url = 'http://'+terminal.ipAddress+':8000/api/ticket/'+ticketHash+'/'
                 print('Request GET: '+url)
                 try:
                     response = requests.get(url, headers=self.headers, timeout=1)
-                    tickets = response.json()
-                    serializer = TicketSerializer(data=tickets)
-                    if serializer.is_valid():
-                        ticket = serializer.data
-                        if ticket.get('status') == 'Validated':
+                    f = open('log/GET_INTERNAL_TICKET.log', 'w')
+                    f.write('GET: '+url)
+                    f.write('\nResponse: \n')
+                    f.write(response.text)
+                    f.close()
+                    ticket_dict = response.json()
+                    if isinstance(ticket_dict, dict):
+                        if ticket_dict.get('status') == 'Validated':
                             isAlreadyValidated = True
-                    else:
-                        print('Serializer is not valid:')
-                        for error in serializer.errors:
-                            print('Error: '+error)
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
+                    number_of_disc_terminal = number_of_disc_terminal + 1
                     print('TIMEOUT')
+        if number_of_terminal == number_of_disc_terminal:
+            for terminal in terminals:
+                terminal.status = 'Connected'
+                terminal.save()
         return isAlreadyValidated
 
     def validateTicket(self, ticketHash):
         terminals = Terminal.objects.all()
+        number_of_terminal = len(list(terminals))
+        number_of_disc_terminal = 0
         for terminal in terminals:
             if terminal.status == 'Connected':
                 url = 'http://'+terminal.ipAddress+':8000/api/ticket/validate/'+ticketHash+'/'
@@ -119,7 +127,12 @@ class TerminalControler():
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
+                    number_of_disc_terminal = number_of_disc_terminal + 1
                     print('TIMEOUT')
+        if number_of_terminal == number_of_disc_terminal:
+            for terminal in terminals:
+                terminal.status = 'Connected'
+                terminal.save()
 
     def obtainTerminalsFromGestionWebsite(self, ip):
         url = self.heroku_url+'terminals/'
