@@ -8,7 +8,7 @@
 # Description : Base installation of bind9, DNS servicing
 #
 
-DIGIT=$(ifconfig enp0s25  | grep 'inet addr:'| \
+DIGIT=$(ifconfig eth0  | grep 'inet addr:'| \
       egrep '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}' | \
       cut -d. -f4 | awk '{ print $1}')
 
@@ -54,7 +54,7 @@ echo $namedConfLocal >> /etc/bind/named.conf.local
 
 # We specifie our zone
 mkdir /etc/bind/zones
-sed -e "s/\${IP}/'$IP'/" config/db.gti525.org > /etc/bind/zones/db.gti525.org
+sed -e "s/\${IP}/$IP/" config/db.gti525.org > /etc/bind/zones/db.gti525.org
 
 # Restart service
 /etc/init.d/bind9 restart

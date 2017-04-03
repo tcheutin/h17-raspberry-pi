@@ -31,7 +31,7 @@ done
 yes | cp -rf $DEFAULT_INTERFACE_CONFIG config/interfaces.ORIGINAL
 
 # We fill our template with our IP range
-sed -e "s/\${IP}/'$IP'/" -e "s/\${NETMASK}/$NETMASK/" \
+sed -e "s/\${IP}/$IP/" -e "s/\${NETMASK}/$NETMASK/" \
         config/interfaces > $DEFAULT_INTERFACE_CONFIG
 
 # Down/Up interfaces
@@ -52,7 +52,7 @@ yes | cp -rf $DEFAULT_DHCPD_CONFIG config/dnsmasq.conf.ORIGINAL
 
 IP=$(echo $IP| cut -d. -f1-3 | awk '{ print $1 }')
 # We fill our template with our IP range
-sed -e "s/\${IP}/'$IP'/" config/dnsmasq.conf > $DEFAULT_DHCPD_CONFIG
+sed -e "s/\${IP}/$IP/" config/dnsmasq.conf > $DEFAULT_DHCPD_CONFIG
 
 # Start service
 service dnsmasq start

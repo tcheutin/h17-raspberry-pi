@@ -19,3 +19,5 @@ apt-get upgrade -y
 ./nginx.sh
 ./dns.sh
 ./base.sh
+
+reboot
