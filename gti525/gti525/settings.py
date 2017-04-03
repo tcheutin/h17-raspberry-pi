@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'x7$24n&jvx^w#91ta^q+)$@2d+vq)u6^(0a)b7owy^bt3zp_8%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*'] #Not the most secure thing but I need django to receive query from anywhere
 
