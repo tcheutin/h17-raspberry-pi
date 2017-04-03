@@ -193,7 +193,7 @@ class TerminalControler():
                     event_dict = ticket_dict.get('event')
 
                     event_name = event_dict.get('name')
-                    event_time = event_dict.get('time')
+                    event_time = event_dict.get('startDate')
                     auditorium_dict = event_dict.get('auditorium')
 
                     auditorium_name = auditorium_dict.get('name')
