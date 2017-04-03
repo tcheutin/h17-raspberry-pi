@@ -280,7 +280,7 @@ class TerminalControler():
         return False
 
     def sendIPtoPI(self, pi_ip, my_ip):
-        url = 'https://'+pi_ip+'api/terminal/'
+        url = 'https://'+pi_ip+'/api/terminal/'
         payload = {'ipAddress': my_ip, 'status': 'Connected'}
         try:
             response = requests.post(url, headers=self.headers, data=payload, timeout=2, verify=False)
