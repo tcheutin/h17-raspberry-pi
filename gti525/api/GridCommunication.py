@@ -25,7 +25,7 @@ class TerminalControler():
             tickets = Ticket.objects.all()
             auditoriums = Auditorium.objects.all()
             events = Event.objects.all()
-            url = 'http://'+ipAddress+':8000/api/tickets/'
+            url = 'https://'+ipAddress+':8000/api/tickets/'
             print('GET: '+url)
             response = requests.get(url, headers=self.headers, timeout=2)
             f = open('log/GET_TICKET_LIST_INTERNAL.log', 'w')
@@ -91,7 +91,7 @@ class TerminalControler():
         number_of_disc_terminal = 0
         for terminal in terminals:
             if terminal.status == 'Connected':
-                url = 'http://'+terminal.ipAddress+':8000/api/ticket/'+ticketHash+'/'
+                url = 'https://'+terminal.ipAddress+':8000/api/ticket/'+ticketHash+'/'
                 print('Request GET: '+url)
                 try:
                     response = requests.get(url, headers=self.headers, timeout=1)
@@ -121,7 +121,7 @@ class TerminalControler():
         number_of_disc_terminal = 0
         for terminal in terminals:
             if terminal.status == 'Connected':
-                url = 'http://'+terminal.ipAddress+':8000/api/ticket/validate/'+ticketHash+'/'
+                url = 'https://'+terminal.ipAddress+':8000/api/ticket/validate/'+ticketHash+'/'
                 print('Request PATCH: '+url)
                 try:
                     response = requests.patch(url, headers=self.headers, timeout=1)
@@ -280,7 +280,7 @@ class TerminalControler():
         return False
 
     def sendIPtoPI(self, pi_ip, my_ip):
-        url = 'http://'+pi_ip+':8000/api/terminal/'
+        url = 'https://'+pi_ip+':8000/api/terminal/'
         payload = {'ipAddress': my_ip, 'status': 'Connected'}
         try:
             response = requests.post(url, headers=self.headers, data=payload, timeout=2)
