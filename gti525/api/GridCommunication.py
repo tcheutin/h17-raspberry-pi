@@ -27,7 +27,7 @@ class TerminalControler():
             events = Event.objects.all()
             url = 'https://'+ipAddress+':8000/api/tickets/'
             print('GET: '+url)
-            response = requests.get(url, headers=self.headers, timeout=2, verify='script/config/dhparam.pem')
+            response = requests.get(url, headers=self.headers, timeout=2, verify=False)
             f = open('log/GET_TICKET_LIST_INTERNAL.log', 'w')
             f.write('GET: '+ url+'\nResponse\n')
             f.write(response.text)
@@ -94,7 +94,7 @@ class TerminalControler():
                 url = 'https://'+terminal.ipAddress+':8000/api/ticket/'+ticketHash+'/'
                 print('Request GET: '+url)
                 try:
-                    response = requests.get(url, headers=self.headers, timeout=1, verify='script/config/dhparam.pem')
+                    response = requests.get(url, headers=self.headers, timeout=1, verify=False)
                     f = open('log/GET_INTERNAL_TICKET.log', 'w')
                     f.write('GET: '+url)
                     f.write('\nResponse: \n')
@@ -124,7 +124,7 @@ class TerminalControler():
                 url = 'https://'+terminal.ipAddress+':8000/api/ticket/validate/'+ticketHash+'/'
                 print('Request PATCH: '+url)
                 try:
-                    response = requests.patch(url, headers=self.headers, timeout=1, verify='script/config/dhparam.pem')
+                    response = requests.patch(url, headers=self.headers, timeout=1, verify=False)
                 except requests.exceptions.Timeout:
                     terminal.status = 'Non-Responsive'
                     terminal.save()
@@ -283,7 +283,7 @@ class TerminalControler():
         url = 'https://'+pi_ip+':8000/api/terminal/'
         payload = {'ipAddress': my_ip, 'status': 'Connected'}
         try:
-            response = requests.post(url, headers=self.headers, data=payload, timeout=2, verify='script/config/dhparam.pem')
+            response = requests.post(url, headers=self.headers, data=payload, timeout=2, verify=False)
             print('POST: '+url+' | Payload: '+str(payload))
             f = open('log/POST_IP_TO_PI.log', 'w')
             f.write('POST: '+url+' | Payload: '+str(payload))
