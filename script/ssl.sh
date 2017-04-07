@@ -5,7 +5,7 @@
 # Name        : ssl.sh
 # Author      : Nicolas De Oliveira Nadeau
 # Usage       : ./ssl.sh
-# Description :
+# Description : Allow HTTPS with NGINX
 # REFERENCE   : https://gist.github.com/jessedearing/2351836
 #
 

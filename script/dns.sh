@@ -8,7 +8,10 @@
 # Description : Base installation of bind9, DNS servicing
 #
 
-DIGIT=$(ifconfig eth0  | grep 'inet addr:'| egrep '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}' | cut -d. -f4 | awk '{ print $1}')
+DIGIT=$(ifconfig eth0  | grep 'inet addr:'| \
+      egrep '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}' | \
+      cut -d. -f4 | awk '{ print $1}')
+
 IP="172.16.$DIGIT.1"
 
 while getopts i: option
@@ -20,10 +23,10 @@ done
 
 # Upgrade
 apt-get update
-apt-get upgrade -f
+apt-get upgrade -y
 
 # We install dependancy
-apt-get install -f bind9 bind9utils dnsutils
+apt-get install -y bind9 bind9utils dnsutils
 
 # we enable log
 logging="
@@ -51,7 +54,7 @@ echo $namedConfLocal >> /etc/bind/named.conf.local
 
 # We specifie our zone
 mkdir /etc/bind/zones
-sed -e "s/\${IP}/'$IP'/" config/db.gti525.org > /etc/bin/zones/db.gti525.org
+sed -e "s/\${IP}/$IP/" config/db.gti525.org > /etc/bind/zones/db.gti525.org
 
 # Restart service
 /etc/init.d/bind9 restart

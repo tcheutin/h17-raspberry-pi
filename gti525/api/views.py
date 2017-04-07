@@ -8,6 +8,7 @@ from datetime import datetime
 from django.utils import timezone
 from api.GridCommunication import TerminalControler
 from django.core.exceptions import ObjectDoesNotExist
+import manage as main
 
 class TerminalList(APIView):
     ''' List all terminal or create a new terminal. '''
@@ -28,27 +29,40 @@ class TicketList(APIView):
     ''' List all ticket. '''
 
     def get(self, request, format=None):
-        # This code was taken here: http://stackoverflow.com/a/4581997
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-        ##############################################################
-        try:
-            terminal = Terminal.objects.get(ipAddress=ip)
-            if terminal.status == 'Non-Responsive':
-                terminal.status = 'Connected'
+        if main.have_receive_ticket:
+            # This code was taken here: http://stackoverflow.com/a/4581997
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(',')[0]
+            else:
+                ip = request.META.get('REMOTE_ADDR')
+            ##############################################################
+            try:
+                terminal = Terminal.objects.get(ipAddress=ip)
+                if terminal.status == 'Non-Responsive':
+                    terminal.status = 'Connected'
+                    terminal.save()
+            except ObjectDoesNotExist:
+                terminal = Terminal(ipAddress=ip, status='Connected')
                 terminal.save()
-        except ObjectDoesNotExist:
-            terminal = Terminal(ipAddress=ip, status='Connected')
-            terminal.save()
-        tickets = Ticket.objects.all()
-        serializer = TicketSerializer(tickets, many=True)
-        return Response(serializer.data)
+            tickets = Ticket.objects.all()
+            serializer = TicketSerializer(tickets, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({'NotReady': 'True'})
 
 class TicketValidation(APIView):
     ''' Retrieve or update a ticket. '''
+
+    def httpCodeToValidationStatus(self, httpCode):
+        if httpCode == 202:
+            return 'Validated'
+        elif httpCode == 404:
+            return 'Invalid Ticket'
+        elif httpCode == 409:
+            return 'Ticket Already Validated'
+        else:
+            return 'INVALID HTTP CODE'
 
     def get_object(self, ticketHash):
         try:
@@ -92,7 +106,6 @@ class TicketValidation(APIView):
                 else:
                     payload = serializers.errors
                     httpResponse = status.HTTP_400_BAD_REQUEST
-        logValidation = MobileCommLog(ticket, httpResponse)
         MobileCommLog.objects.create(ticketHash=ticket.ticketHash, httpResponse=httpResponse, time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         return Response(payload, status=httpResponse)
 

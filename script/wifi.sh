@@ -12,6 +12,7 @@
 DEFAULT_FOLDER="/etc/hostapd/"
 DEFAULT_CONFIG_FILE="hostapd.conf"
 
+# DEFAULT PASSWORD SHOULD BE CHANGE
 PASSWORD="passphrase"
 
 while getopts p: option
@@ -26,7 +27,7 @@ apt-get update
 apt-get upgrade -y
 
 # Installing the real thing
-apt-get install - y hostapd
+apt-get install -y hostapd
 
 # We copy our default config file
 yes | cp -rf config/$DEFAULT_CONFIG_FILE $DEFAULT_FOLDER$DEFAULT_CONFIG_FILE

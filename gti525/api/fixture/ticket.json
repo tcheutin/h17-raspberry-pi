@@ -3,10 +3,9 @@
     "model": "api.ticket",
     "pk": 1,
     "fields": {
-      "ticketHash": "12345abcdef",
+      "ticketHash": "11aa",
       "status": "Non-Validated",
-      "validationTime": "2017-02-17 20:23:00",
-      "validationTerminal": 1,
+      "validationTime": "2000-01-01 00:00:00",
       "owner": "Michel Tremblay",
       "event": 1
     }
@@ -15,11 +14,65 @@
     "model": "api.ticket",
     "pk": 2,
     "fields": {
-      "ticketHash": "qwerty",
+      "ticketHash": "22bb",
       "status": "Non-Validated",
-      "validationTime": "2017-02-17 20:23:00",
-      "validationTerminal": 1,
+      "validationTime": "2000-01-01 00:00:00",
       "owner": "Melina Di Nardo",
+      "event": 1
+    }
+  },
+  {
+    "model": "api.ticket",
+    "pk": 3,
+    "fields": {
+      "ticketHash": "33cc",
+      "status": "Non-Validated",
+      "validationTime": "2000-01-01 00:00:00",
+      "owner": "John Robert",
+      "event": 1
+    }
+  },
+  {
+    "model": "api.ticket",
+    "pk": 4,
+    "fields": {
+      "ticketHash": "44dd",
+      "status": "Non-Validated",
+      "validationTime": "2000-01-01 00:00:00",
+      "owner": "Martin Brodeur",
+      "event": 1
+    }
+  },
+  {
+    "model": "api.ticket",
+    "pk": 5,
+    "fields": {
+      "ticketHash": "55ee",
+      "status": "Non-Validated",
+      "validationTime": "2000-01-01 00:00:00",
+      "owner": "Mark Lee",
+      "event": 1
+    }
+  },
+  {
+    "model": "api.ticket",
+    "pk": 6,
+    "fields": {
+      "ticketHash": "66ff",
+      "status": "Non-Validated",
+      "validationTime": "2000-01-01 00:00:00",
+      "owner": "Alice",
+      "event": 1
+    }
+  },
+  {
+    "model": "api.ticket",
+    "pk": 7,
+    "fields": {
+      "ticketHash": "77gg",
+      "status": "Non-Validated",
+      "validationTime": "2000-01-01 00:00:00",
+      "owner": "Bob",
       "event": 1
     }
   }
